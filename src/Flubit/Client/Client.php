@@ -2,6 +2,7 @@
 
 namespace Flubit\Client;
 
+use Flubit\Exception\BadMethodCallException;
 use Flubit\Exception\UnauthorizedException;
 use Guzzle\Http\Client as GuzzleClient;
 use Guzzle\Http\Exception\ClientErrorResponseException;
@@ -159,9 +160,16 @@ EOH;
 
         } catch (ClientErrorResponseException $e) {
 
-            $errorXml = $e->getResponse()->xml();
+            $statusCode = $e->getResponse()->getStatusCode();
+            $msg = (string) $e->getResponse()->xml()['message'];
 
-            throw new UnauthorizedException((string)$errorXml['message'], (int)$errorXml['code']);
+            if ($statusCode === 401) {
+
+                throw new UnauthorizedException($msg, (int) $e->getResponse()->xml()['code']);
+            } else {
+
+                throw new BadMethodCallException($msg, $statusCode);
+            }
         }
     }
 
