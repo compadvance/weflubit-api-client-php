@@ -1,0 +1,17 @@
+{
+    "name": "flubit/merchant-api-client",
+    "type": "library",
+    "description": "PHP client library for the Flubit merchant API.",
+    "keywords": ["flubit"],
+    "homepage": "https://github.com/Flubit/merchant-api-client",
+    "license": "MIT",
+    "require": {
+        "php": ">=5.3.3",
+        "guzzle/guzzle": "~3.7"
+    },
+    "autoload": {
+        "psr-0": {
+            "Flubit": "src/"
+        }
+    }
+}
