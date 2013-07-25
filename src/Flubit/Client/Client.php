@@ -5,7 +5,7 @@ namespace Flubit\Client;
 use Flubit\Exception\BadMethodCallException;
 use Flubit\Exception\UnauthorizedException;
 use Guzzle\Http\Client as GuzzleClient;
-use Guzzle\Http\Exception\ClientErrorResponseException;
+use Guzzle\Http\Exception\BadResponseException;
 use Guzzle\Http\Message\RequestInterface;
 
 class Client implements ClientInterface
@@ -63,7 +63,13 @@ class Client implements ClientInterface
     {
         $payload = $this->generateDispatchOrderPayload($dateTime, $params);
 
-        $request = $this->getPostRequest('orders/dispatch.xml?flubit_order_id=' . $id, $payload);
+        $request = $this->getPostRequest(
+            'orders/dispatch.xml',
+            $payload,
+            array(
+                'flubit_order_id' => $id
+            )
+        );
 
         return $this->call($request);
     }
@@ -75,7 +81,13 @@ class Client implements ClientInterface
     {
         $payload = $this->generateDispatchOrderPayload($dateTime, $params);
 
-        $request = $this->getPostRequest('orders/dispatch.xml?merchant_order_id=' . $id, $payload);
+        $request = $this->getPostRequest(
+            'orders/dispatch.xml',
+            $payload,
+            array(
+                'merchant_order_id' => $id
+            )
+        );
 
         return $this->call($request);
     }
@@ -87,7 +99,13 @@ class Client implements ClientInterface
     {
         $payload = $this->generateCancelOrderPayload($reason);
 
-        $request = $this->getPostRequest('orders/cancel.xml?flubit_order_id=' . $id, $payload);
+        $request = $this->getPostRequest(
+            'orders/cancel.xml',
+            $payload,
+            array(
+                'flubit_order_id' => $id
+            )
+        );
 
         return $this->call($request);
     }
@@ -99,7 +117,13 @@ class Client implements ClientInterface
     {
         $payload = $this->generateCancelOrderPayload($reason);
 
-        $request = $this->getPostRequest('orders/cancel.xml?merchant_order_id=' . $id, $payload);
+        $request = $this->getPostRequest(
+            'orders/cancel.xml',
+            $payload,
+            array(
+                'merchant_order_id' => $id
+            )
+        );
 
         return $this->call($request);
     }
@@ -109,7 +133,13 @@ class Client implements ClientInterface
      */
     public function refundOrderByFlubitId($id)
     {
-        $request = $this->getPostRequest('orders/refund.xml?flubit_order_id=' . $id);
+        $request = $this->getPostRequest(
+            'orders/refund.xml',
+            null,
+            array(
+                'flubit_order_id' => $id
+            )
+        );
 
         return $this->call($request);
     }
@@ -119,7 +149,38 @@ class Client implements ClientInterface
      */
     public function refundOrderByMerchantOrderId($id)
     {
-        $request = $this->getPostRequest('orders/refund.xml?merchant_order_id=' . $id);
+        $request = $this->getPostRequest(
+            'orders/refund.xml',
+            null,
+            array(
+                'merchant_order_id' => $id
+            )
+        );
+
+        return $this->call($request);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getOrders(\DateTime $from, $status)
+    {
+        $request = $this->getGetRequest(
+            'orders/filter.xml',
+            array(
+                'from' => $from->format($this->timestampFormat),
+                'status' => $status
+            )
+        );
+
+        return $this->call($request);
+    }
+
+    public function getProductsFeed($feedID)
+    {
+        $request = $this->getGetRequest(
+            sprintf('products/feed/%s.xml', $feedID)
+        );
 
         return $this->call($request);
     }
@@ -155,17 +216,17 @@ EOH;
     {
         try {
             return $request
-                       ->send(array($request))
+                   ->send(array($request))
                    ->xml();
 
-        } catch (ClientErrorResponseException $e) {
+        } catch (BadResponseException $e) {
 
             $statusCode = $e->getResponse()->getStatusCode();
-            $msg = (string) $e->getResponse()->xml()['message'];
+            $msg = (string)$e->getResponse()->xml()['message'];
 
             if ($statusCode === 401) {
 
-                throw new UnauthorizedException($msg, (int) $e->getResponse()->xml()['code']);
+                throw new UnauthorizedException($msg, (int)$e->getResponse()->xml()['code']);
             } else {
 
                 throw new BadMethodCallException($msg, $statusCode);
@@ -173,11 +234,11 @@ EOH;
         }
     }
 
-    private function getGetRequest($uri)
+    private function getGetRequest($uri, array $queryParams = array())
     {
         return $this->client
             ->get(
-                $uri,
+                sprintf('%s?%s', $uri, http_build_query($queryParams)),
                 array(
                     'accept'     => 'application/xml',
                     'auth-token' => $this->generateAuthToken()
@@ -185,11 +246,11 @@ EOH;
             );
     }
 
-    private function getPostRequest($uri, $payload = array())
+    private function getPostRequest($uri, $payload = null, array $queryParams = array())
     {
         return $this->client
             ->post(
-                $uri,
+                sprintf('%s?%s', $uri, http_build_query($queryParams)),
                 array(
                     'accept'     => 'application/xml',
                     'auth-token' => $this->generateAuthToken()
@@ -279,40 +340,7 @@ EOH;
 //            $xmlString
 //        );
 //    }
-//
-//    /**
-//     * Query API feed method with feed ID
-//     *
-//     * @param  integer $feedID
-//     *
-//     * @return string
-//     */
-//    public function getProductFeedStatus($feedID)
-//    {
-//        return $this->queryApi(
-//            sprintf("1/products/feed/%s.xml", $feedID),
-//            self::METHOD_TYPE_GET
-//        );
-//    }
-//
-//    /**
-//     * Query API filter method
-//     *
-//     * @param  string $from
-//     * @param  string $status
-//     *
-//     * @return string
-//     */
-//    public function filterOrders($from, $status = null)
-//    {
-//        $params = ['from' => $from, 'status' => $status];
-//
-//        return $this->queryApi(
-//            '1/orders/filter.xml',
-//            self::METHOD_TYPE_GET,
-//            null,
-//            $params
-//        );
-//    }
+
+
 
 }

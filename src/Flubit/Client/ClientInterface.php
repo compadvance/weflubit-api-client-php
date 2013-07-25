@@ -57,17 +57,21 @@ interface ClientInterface
      */
     public function refundOrderByMerchantOrderId($id);
 
+    /**
+     * @param \DateTime $from
+     * @param string    $status
+     *
+     * @return \SimpleXMLElement
+     */
+    public function getOrders(\DateTime $from, $status);
+
+    /**
+     * @param string $feedID
+     *
+     * @return mixed
+     */
+    public function getProductsFeed($feedID);
 //    public function createProduct($xmlString);
 //
 //    public function updateProduct($xmlString);
-//
-//    public function getProductFeedStatus($feedID);
-//
-//    public function filterOrders($from, $status);
-//
-//    public function dispatchOrder($xmlString, $orderId, $type = 'flubit');
-//
-//    public function cancelOrder($xmlString, $orderId, $type = 'flubit');
-//
-//    public function refundOrder($orderId, $type = 'flubit');
 }
