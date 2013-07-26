@@ -1,4 +1,4 @@
-merchant-api-client
+Merchant API Client
 ===================
 
-Flubit Merchant API PHP client library
+Flubit Merchant API PHP client library. 
