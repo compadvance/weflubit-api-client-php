@@ -68,10 +68,21 @@ interface ClientInterface
     /**
      * @param string $feedID
      *
-     * @return mixed
+     * @return \SimpleXMLElement
      */
     public function getProductsFeed($feedID);
-//    public function createProduct($xmlString);
-//
-//    public function updateProduct($xmlString);
+
+    /**
+     * @param $productXml
+     *
+     * @return \SimpleXMLElement
+     */
+    public function createProducts($productXml);
+
+    /**
+     * @param $productXml
+     *
+     * @return \SimpleXMLElement
+     */
+    public function updateProducts($productXml);
 }

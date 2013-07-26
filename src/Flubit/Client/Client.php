@@ -176,10 +176,42 @@ class Client implements ClientInterface
         return $this->call($request);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getProductsFeed($feedID)
     {
         $request = $this->getGetRequest(
             sprintf('products/feed/%s.xml', $feedID)
+        );
+
+        return $this->call($request);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createProducts($productXml)
+    {
+        $request = $this->getPostRequest(
+            'products/feed.xml',
+            $productXml,
+            array(
+                'type' => 'create'
+            )
+        );
+
+        return $this->call($request);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function updateProducts($productXml)
+    {
+        $request = $this->getPostRequest(
+            'products/feed.xml',
+            $productXml
         );
 
         return $this->call($request);
@@ -242,7 +274,8 @@ EOH;
                 array(
                     'accept'     => 'application/xml',
                     'auth-token' => $this->generateAuthToken()
-                )
+                ),
+                array('allow_redirects' => false)
             );
     }
 
@@ -255,7 +288,8 @@ EOH;
                     'accept'     => 'application/xml',
                     'auth-token' => $this->generateAuthToken()
                 ),
-                $payload
+                $payload,
+                array('allow_redirects' => false)
             );
     }
 
@@ -288,59 +322,12 @@ EOH;
     }
 
     /**
-     * Create new nonce
-     *
-     * Uses the given string if supplied, or current timestamp if not
-     *
-     * @param  string $randomString
-     *
      * @return string
      */
-    private function generateNonce($randomString = null)
+    private function generateNonce()
     {
-        if (!$randomString) {
-            $randomString = (new \DateTime)->getTimestamp();
-        }
-
-        $nonce = md5($randomString);
+        $nonce = md5(uniqid(mt_rand(), true));
 
         return $nonce;
     }
-
-
-//
-//    /**
-//     * Query API feed method in create mode
-//     *
-//     * @param  string $xmlString
-//     *
-//     * @return string
-//     */
-//    public function createProduct($xmlString)
-//    {
-//        return $this->queryApi(
-//            '1/products/feed.xml?type=create',
-//            self::METHOD_TYPE_POST,
-//            $xmlString
-//        );
-//    }
-//
-//    /**
-//     * Query API feed method in update mode
-//     *
-//     * @param  string $xmlString
-//     *
-//     * @return string
-//     */
-//    public function updateProduct($xmlString)
-//    {
-//        return $this->queryApi(
-//            '1/products/feed.xml',
-//            self::METHOD_TYPE_POST,
-//            $xmlString
-//        );
-//    }
-
-
-
 }
