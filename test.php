@@ -60,7 +60,7 @@ try {
 
     $xml = $client->getProductsFeed($feedId);
 
-    printf("Feed %s has status: %s\n", $feedId, (string) $xml->status);
+    printf("Feed %s has status: %s\n", $feedId, (string) $xml->attributes()->status);
 
 } catch (\Flubit\Exception\BadMethodCallException $e) {
     printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
