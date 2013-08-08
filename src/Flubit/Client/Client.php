@@ -313,7 +313,7 @@ EOH;
         );
 
         return sprintf(
-            "\tauth-token\n\tkey=\"%s\",\n\tsignature=\"%s\",\n\tnonce=\"%s\",\n\tcreated=\"%s\"",
+            "key=\"%s\", signature=\"%s\", nonce=\"%s\", created=\"%s\"",
             $this->apiKey,
             $signature,
             $nonce,
