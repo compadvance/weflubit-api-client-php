@@ -303,7 +303,8 @@ EOH;
      */
     private function generateAuthToken()
     {
-        $time = (new \DateTime('UTC'))->format($this->timestampFormat);
+        $dateTime = new \DateTime('UTC');
+        $time = $dateTime->format($this->timestampFormat);
         $nonce = $this->generateNonce();
 
         $signature = base64_encode(
