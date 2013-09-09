@@ -254,11 +254,12 @@ EOH;
         } catch (BadResponseException $e) {
 
             $statusCode = $e->getResponse()->getStatusCode();
-            $msg = (string)$e->getResponse()->xml()['message'];
+            $xml = $e->getResponse()->xml();
+            $msg = (string)$xml['message'];
 
             if ($statusCode === 401) {
 
-                throw new UnauthorizedException($msg, (int)$e->getResponse()->xml()['code']);
+                throw new UnauthorizedException($msg, (int)$xml['code']);
             } else {
 
                 throw new BadMethodCallException($msg, $statusCode);
