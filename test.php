@@ -52,6 +52,21 @@ try {
     printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
 }
 
+##############################
+# Call product search
+##############################
+try {
+    $isActive = true;
+    $page     = 1;
+    $limit    = 10;
+
+    $xml = $client->getProducts($isActive, $limit, $page);
+    echo $xml->asXML();
+
+} catch (\Flubit\Exception\UnauthorizedException $e) {
+    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
+}
+
 ########################################
 # Check feed status
 ########################################
