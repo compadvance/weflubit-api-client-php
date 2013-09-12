@@ -176,6 +176,32 @@ class Client implements ClientInterface
         return $this->call($request);
     }
 
+    public function getProducts($isActive, $limit, $page, $sku = null)
+    {
+        $url = '/1/products/filter.xml';
+
+        if ($sku) {
+            $request = $this->getGetRequest(
+                $url,
+                array(
+                    'is_active' => $isActive,
+                    'sku'       => $sku,
+                )
+            );
+        } else {
+            $request = $this->getGetRequest(
+                $url,
+                array(
+                    'is_active' => $isActive,
+                    'limit'     => $limit,
+                    'page'      => $page,
+                )
+            );
+        }
+
+        return $this->call($request);
+    }
+
     /**
      * {@inheritdoc}
      */

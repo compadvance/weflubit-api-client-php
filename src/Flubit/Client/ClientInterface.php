@@ -66,6 +66,15 @@ interface ClientInterface
     public function getOrders(\DateTime $from, $status);
 
     /**
+     * @param boolean $isActive
+     * @param integer $limit
+     * @param integer $page
+     *
+     * @return \SimpleXMLElement
+     */
+    public function getProducts($isActive, $limit, $page, $sku = null);
+
+    /**
      * @param string $feedID
      *
      * @return \SimpleXMLElement
