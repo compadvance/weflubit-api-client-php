@@ -15,8 +15,7 @@ $client = new \Flubit\Client\Client(CONSUMER_KEY, CONSUMER_SECRET, DOMAIN);
 try {
 
     $xml = $client->getAccountStatus();
-
-    printf("You have %s active products\n", (int)$xml);
+    printf("You have %s active products\n", (int) $xml->active_products);
 
 } catch (\Flubit\Exception\UnauthorizedException $e) {
 
@@ -42,9 +41,7 @@ EOH;
 try {
 
     $xml = $client->createProducts($productXml);
-
     $feedId = (string) $xml;
-
     printf("Feed %s created\n", $feedId);
 
 } catch (\Flubit\Exception\UnauthorizedException $e) {
@@ -74,7 +71,6 @@ try {
 try {
 
     $xml = $client->getProductsFeed($feedId);
-
     printf("Feed %s has status: %s\n", $feedId, (string) $xml->attributes()->status);
 
 } catch (\Flubit\Exception\BadMethodCallException $e) {
