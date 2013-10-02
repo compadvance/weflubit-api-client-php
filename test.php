@@ -116,7 +116,7 @@ try {
 
 try {
 
-    $xml = $client->cancelOrderByMerchantOrderId(
+    $xml = $client->cancelOrderByFlubitId(
         1,
         "Wrong colour."
     );
@@ -131,7 +131,7 @@ try {
 
 try {
 
-    $xml = $client->refundOrderByMerchantOrderId(1);
+    $xml = $client->refundOrderByFlubitId(1);
 
 } catch (\Flubit\Exception\BadMethodCallException $e) {
     printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
