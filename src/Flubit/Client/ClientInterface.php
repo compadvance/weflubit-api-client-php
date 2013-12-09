@@ -82,16 +82,18 @@ interface ClientInterface
     public function getProductsFeed($feedID);
 
     /**
-     * @param $productXml
+     * @param $productData
+     * @param $dataFormat
      *
      * @return \SimpleXMLElement
      */
-    public function createProducts($productXml);
+    public function createProducts($productData, $dataFormat = 'xml');
 
     /**
-     * @param $productXml
+     * @param $productData
+     * @param $dataFormat
      *
      * @return \SimpleXMLElement
      */
-    public function updateProducts($productXml);
+    public function updateProducts($productData, $dataFormat = 'xml');
 }
