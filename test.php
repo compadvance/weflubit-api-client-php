@@ -23,7 +23,7 @@ try {
 }
 
 ##############################
-# Post a feed
+# Post an XML feed
 ##############################
 
 $productXml = <<<EOH
@@ -43,6 +43,26 @@ try {
     $xml = $client->createProducts($productXml);
     $feedId = (string) $xml;
     printf("Feed %s created\n", $feedId);
+
+} catch (\Flubit\Exception\UnauthorizedException $e) {
+
+    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
+}
+
+##############################
+# Post a CSV feed
+##############################
+
+$productXml = <<<EOH
+sku,title,base_price,stock,ean,image_1,image_2
+"SKU200","Sony Speakers 200",199.99,1,5010559095836,"http://placehold2000.it/100x100","http://placehold200.it/300x300"
+"SKU201","Sony Speakers 201",199.99,1,5010559096836,"http://placehold3000.it/100x100","http://placehold300.it/300x300"
+EOH;
+
+try {
+
+    $xml = $client->createProducts($productXml, 'csv');
+    print($xml->asXML());
 
 } catch (\Flubit\Exception\UnauthorizedException $e) {
 
