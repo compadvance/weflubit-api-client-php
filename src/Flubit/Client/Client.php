@@ -217,11 +217,12 @@ class Client implements ClientInterface
     /**
      * {@inheritdoc}
      */
-    public function createProducts($productXml)
+    public function createProducts($productData, $dataFormat = 'xml')
     {
         $request = $this->getPostRequest(
             'products/feed.xml',
-            $productXml,
+            $dataFormat,
+            $productData,
             array(
                 'type' => 'create'
             )
@@ -233,11 +234,12 @@ class Client implements ClientInterface
     /**
      * {@inheritdoc}
      */
-    public function updateProducts($productXml)
+    public function updateProducts($productData, $dataFormat = 'xml')
     {
         $request = $this->getPostRequest(
             'products/feed.xml',
-            $productXml
+            $dataFormat,
+            $productData
         );
 
         return $this->call($request);
@@ -306,14 +308,15 @@ EOH;
             );
     }
 
-    private function getPostRequest($uri, $payload = null, array $queryParams = array())
+    private function getPostRequest($uri, $payloadFormat, $payload = null, array $queryParams = array())
     {
         return $this->client
             ->post(
                 sprintf('%s?%s', $uri, http_build_query($queryParams)),
                 array(
                     'accept'     => 'application/xml',
-                    'auth-token' => $this->generateAuthToken()
+                    'auth-token' => $this->generateAuthToken(),
+                    'Content-Type' => ('csv' == strtolower($payloadFormat)) ? 'text/csv' : 'application/xml'
                 ),
                 $payload,
                 array('allow_redirects' => false)
