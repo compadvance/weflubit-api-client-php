@@ -23,7 +23,7 @@ try {
 }
 
 ##############################
-# Post an XML feed
+# Post a feed
 ##############################
 
 $productXml = <<<EOH
