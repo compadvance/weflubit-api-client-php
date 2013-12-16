@@ -29,6 +29,32 @@ class Client implements ClientInterface
      * @var string
      */
     private $apiSecret;
+    
+    /**
+     *
+     * @var Array 
+     */
+    private static $allowedContentTypes = array(
+        'application/xml' => 'xml',
+        'application/json' => 'json',
+        'text/csv' => 'csv'
+    );
+    
+    const DEFAULT_REQUEST_FORMAT = 'xml';
+    
+    const DEFAULT_RESPONSE_FORMAT = 'xml';
+    
+    /**
+     *
+     * @var string 
+     */
+    private $requestFormat = self::DEFAULT_REQUEST_FORMAT;
+    
+    /**
+     *
+     * @var string 
+     */
+    private $responseFormat = self::DEFAULT_RESPONSE_FORMAT;
 
     /**
      * @param string $apiKey
@@ -45,13 +71,55 @@ class Client implements ClientInterface
             'version' => '1'
         ));
     }
+    
+    /**
+     * 
+     * @param string $format
+     * @return Client
+     */
+    public function setResponseFormat($format)
+    {
+        $this->responseFormat = $format;
+        
+        return $this;
+    }
+    
+    /**
+     * 
+     * @return string
+     */
+    public function getResponseFormat()
+    {
+        return $this->responseFormat;
+    }
+    
+    /**
+     * 
+     * @param string $format
+     * @return Client
+     */
+    public function setRequestFormat($format)
+    {
+        $this->requestFormat = $format;
+        
+        return $this;
+    }
+    
+    /**
+     * 
+     * @return string
+     */
+    public function getRequestFormat()
+    {
+        return $this->requestFormat;
+    }
 
     /**
      * {@inheritdoc}
      */
     public function getAccountStatus()
     {
-        $request = $this->getGetRequest('account/status.xml');
+        $request = $this->getGetRequest(sprintf('account/status.%s', $this->responseFormat));
 
         return $this->call($request);
     }
@@ -64,7 +132,7 @@ class Client implements ClientInterface
         $payload = $this->generateDispatchOrderPayload($dateTime, $params);
 
         $request = $this->getPostRequest(
-            'orders/dispatch.xml',
+            sprintf('orders/dispatch.%s', $this->responseFormat),
             $payload,
             array(
                 'flubit_order_id' => $id
@@ -82,7 +150,7 @@ class Client implements ClientInterface
         $payload = $this->generateDispatchOrderPayload($dateTime, $params);
 
         $request = $this->getPostRequest(
-            'orders/dispatch.xml',
+            sprintf('orders/dispatch.%s', $this->responseFormat),
             $payload,
             array(
                 'merchant_order_id' => $id
@@ -100,7 +168,7 @@ class Client implements ClientInterface
         $payload = $this->generateCancelOrderPayload($reason);
 
         $request = $this->getPostRequest(
-            'orders/cancel.xml',
+            sprintf('orders/cancel.%s', $this->responseFormat),
             $payload,
             array(
                 'flubit_order_id' => $id
@@ -118,7 +186,7 @@ class Client implements ClientInterface
         $payload = $this->generateCancelOrderPayload($reason);
 
         $request = $this->getPostRequest(
-            'orders/cancel.xml',
+            sprintf('orders/cancel.%s', $this->responseFormat),
             $payload,
             array(
                 'merchant_order_id' => $id
@@ -134,7 +202,7 @@ class Client implements ClientInterface
     public function refundOrderByFlubitId($id)
     {
         $request = $this->getPostRequest(
-            'orders/refund.xml',
+            sprintf('orders/refund.%s', $this->responseFormat),
             null,
             array(
                 'flubit_order_id' => $id
@@ -150,7 +218,7 @@ class Client implements ClientInterface
     public function refundOrderByMerchantOrderId($id)
     {
         $request = $this->getPostRequest(
-            'orders/refund.xml',
+            sprintf('orders/refund.%s', $this->responseFormat),
             null,
             array(
                 'merchant_order_id' => $id
@@ -166,7 +234,7 @@ class Client implements ClientInterface
     public function getOrders(\DateTime $from, $status)
     {
         $request = $this->getGetRequest(
-            'orders/filter.xml',
+            sprintf('orders/filter.%s', $this->responseFormat),
             array(
                 'from' => $from->format($this->timestampFormat),
                 'status' => $status
@@ -178,7 +246,7 @@ class Client implements ClientInterface
 
     public function getProducts($isActive, $limit, $page, $sku = null)
     {
-        $url = '/1/products/filter.xml';
+        $url = sprintf('/1/products/filter.%s', $this->responseFormat);
 
         if ($sku) {
             $request = $this->getGetRequest(
@@ -217,11 +285,10 @@ class Client implements ClientInterface
     /**
      * {@inheritdoc}
      */
-    public function createProducts($productData, $dataFormat = 'xml')
+    public function createProducts($productData)
     {
         $request = $this->getPostRequest(
-            'products/feed.xml',
-            $dataFormat,
+            sprintf('products/feed.%s',$this->responseFormat),
             $productData,
             array(
                 'type' => 'create'
@@ -234,11 +301,10 @@ class Client implements ClientInterface
     /**
      * {@inheritdoc}
      */
-    public function updateProducts($productData, $dataFormat = 'xml')
+    public function updateProducts($productData)
     {
         $request = $this->getPostRequest(
-            'products/feed.xml',
-            $dataFormat,
+            sprintf('products/feed.%s',$this->responseFormat),
             $productData
         );
 
@@ -297,30 +363,38 @@ EOH;
 
     private function getGetRequest($uri, array $queryParams = array())
     {
-        return $this->client
+        $formats = array_flip(self::$allowedContentTypes);
+        $response = $this->client
             ->get(
                 sprintf('%s?%s', $uri, http_build_query($queryParams)),
                 array(
-                    'accept'     => 'application/xml',
+                    'accept'     => $formats[$this->responseFormat],
                     'auth-token' => $this->generateAuthToken()
                 ),
                 array('allow_redirects' => false)
             );
+        $this->resetFormats();
+        
+        return $response;
     }
 
-    private function getPostRequest($uri, $payloadFormat, $payload = null, array $queryParams = array())
+    private function getPostRequest($uri, $payload = null, array $queryParams = array())
     {
-        return $this->client
+        $formats = array_flip(self::$allowedContentTypes);
+        $response = $this->client
             ->post(
                 sprintf('%s?%s', $uri, http_build_query($queryParams)),
                 array(
-                    'accept'     => 'application/xml',
+                    'accept'     => $formats[$this->responseFormat],
                     'auth-token' => $this->generateAuthToken(),
-                    'Content-Type' => ('csv' == strtolower($payloadFormat)) ? 'text/csv' : 'application/xml'
+                    'Content-Type' => self::$allowedContentTypes[$this->requestFormat]
                 ),
                 $payload,
                 array('allow_redirects' => false)
             );
+        $this->resetFormats();
+        
+        return $response;
     }
 
     /**
@@ -360,5 +434,11 @@ EOH;
         $nonce = md5(uniqid(mt_rand(), true));
 
         return $nonce;
+    }
+
+    private function resetFormats()
+    {
+        $this->requestFormat = self::DEFAULT_REQUEST_FORMAT;
+        $this->responseFormat = self::DEFAULT_RESPONSE_FORMAT;
     }
 }

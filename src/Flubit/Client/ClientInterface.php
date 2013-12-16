@@ -4,6 +4,26 @@ namespace Flubit\Client;
 
 interface ClientInterface
 {
+     /**
+     * 
+     * @param string $format
+     * @return Client
+     */
+    public function setResponseFormat($format);
+    
+    /**
+     * 
+     * @return string
+     */
+    public function getResponseFormat();
+    
+    /**
+     * 
+     * @param string $format
+     * @return Client
+     */
+    public function setRequestFormat($format);
+    
     /**
      * @return \SimpleXMLElement
      */
@@ -87,7 +107,7 @@ interface ClientInterface
      *
      * @return \SimpleXMLElement
      */
-    public function createProducts($productData, $dataFormat = 'xml');
+    public function createProducts($productData);
 
     /**
      * @param $productData
@@ -95,5 +115,5 @@ interface ClientInterface
      *
      * @return \SimpleXMLElement
      */
-    public function updateProducts($productData, $dataFormat = 'xml');
+    public function updateProducts($productData);
 }
