@@ -276,7 +276,7 @@ class Client implements ClientInterface
     public function getProductsFeed($feedID)
     {
         $request = $this->getGetRequest(
-            sprintf('products/feed/%s.xml', $feedID)
+            sprintf('products/feed/%s.%s', $feedID, $this->responseFormat)
         );
 
         return $this->call($request);
@@ -340,15 +340,22 @@ EOH;
 
     private function call(RequestInterface $request)
     {
+        $responseFormat = $request->headers->get('accept');
+        
         try {
-            return $request
-                   ->send(array($request))
-                   ->xml();
+            $response = $request->send(array($request));
+            
+            return call_user_func_array(
+                    array($response, self::$allowedContentTypes[$responseFormat])
+                    );
 
         } catch (BadResponseException $e) {
 
             $statusCode = $e->getResponse()->getStatusCode();
-            $xml = $e->getResponse()->xml();
+            $xml = call_user_func_array(
+                    array($e->getResponse(), self::$allowedContentTypes[$responseFormat])
+                    );
+
             $msg = (string)$xml['message'];
 
             if ($statusCode === 401) {
@@ -364,7 +371,7 @@ EOH;
     private function getGetRequest($uri, array $queryParams = array())
     {
         $formats = array_flip(self::$allowedContentTypes);
-        $response = $this->client
+        $request = $this->client
             ->get(
                 sprintf('%s?%s', $uri, http_build_query($queryParams)),
                 array(
@@ -375,13 +382,13 @@ EOH;
             );
         $this->resetFormats();
         
-        return $response;
+        return $request;
     }
 
     private function getPostRequest($uri, $payload = null, array $queryParams = array())
     {
         $formats = array_flip(self::$allowedContentTypes);
-        $response = $this->client
+        $request = $this->client
             ->post(
                 sprintf('%s?%s', $uri, http_build_query($queryParams)),
                 array(
@@ -394,7 +401,7 @@ EOH;
             );
         $this->resetFormats();
         
-        return $response;
+        return $request;
     }
 
     /**

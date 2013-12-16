@@ -25,6 +25,12 @@ interface ClientInterface
     public function setRequestFormat($format);
     
     /**
+     * 
+     * @return string
+     */
+    public function getRequestFormat();
+    
+    /**
      * @return \SimpleXMLElement
      */
     public function getAccountStatus();
