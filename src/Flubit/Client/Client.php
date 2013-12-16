@@ -79,7 +79,7 @@ class Client implements ClientInterface
      */
     public function setResponseFormat($format)
     {
-        $this->responseFormat = $format;
+        $this->responseFormat = strtolower($format);
         
         return $this;
     }
@@ -100,7 +100,7 @@ class Client implements ClientInterface
      */
     public function setRequestFormat($format)
     {
-        $this->requestFormat = $format;
+        $this->requestFormat = strtolower($format);
         
         return $this;
     }
@@ -340,20 +340,22 @@ EOH;
 
     private function call(RequestInterface $request)
     {
-        $responseFormat = $request->headers->get('accept');
+        $responseFormat = trim($request->getHeader('accept'));
         
         try {
             $response = $request->send(array($request));
             
             return call_user_func_array(
-                    array($response, self::$allowedContentTypes[$responseFormat])
+                    array($response, self::$allowedContentTypes[$responseFormat]),
+                    array()
                     );
 
         } catch (BadResponseException $e) {
 
             $statusCode = $e->getResponse()->getStatusCode();
             $xml = call_user_func_array(
-                    array($e->getResponse(), self::$allowedContentTypes[$responseFormat])
+                    array($e->getResponse(), self::$allowedContentTypes[$responseFormat]),
+                    array()
                     );
 
             $msg = (string)$xml['message'];
@@ -394,7 +396,7 @@ EOH;
                 array(
                     'accept'     => $formats[$this->responseFormat],
                     'auth-token' => $this->generateAuthToken(),
-                    'Content-Type' => self::$allowedContentTypes[$this->requestFormat]
+                    'Content-Type' => $formats[$this->requestFormat]
                 ),
                 $payload,
                 array('allow_redirects' => false)
