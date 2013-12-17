@@ -55,6 +55,38 @@ class Client implements ClientInterface
      * @var string 
      */
     private $responseFormat = self::DEFAULT_RESPONSE_FORMAT;
+    
+    const XML_DISPATCH_PAYLOAD = <<<EOH
+<?xml version="1.0" encoding="UTF-8"?>
+<dispatch>
+    <dispatched_at>%s</dispatched_at>
+    <courier>%s</courier>
+    <consignment_number>%s</consignment_number>
+    <tracking_url>%s</tracking_url>
+</dispatch>
+EOH;
+    
+    const JSON_DISPATCH_PAYLOAD = <<<EOH
+{
+    "dispatched_at" : "%s",
+    "courier" : "%s",
+    "consignment_number" : "%s",
+    "tracking_url" : "%s"
+}
+EOH;
+    
+    const XML_CANCEL_PAYLOAD = <<<EOH
+<?xml version="1.0" encoding="UTF-8"?>
+<cancel>
+    <reason>%s</reason>
+</cancel>
+EOH;
+    
+    const JSON_CANCEL_PAYLOAD = <<<EOH
+{
+    "reason" : "%s"
+}
+EOH;
 
     /**
      * @param string $apiKey
@@ -317,25 +349,24 @@ class Client implements ClientInterface
         $consignmentNumber = isset($params['consignment_number']) ? $params['consignment_number'] : '';
         $trackingUrl = isset($params['tracking_url']) ? $params['tracking_url'] : '';
 
-        return <<<EOH
-<?xml version="1.0" encoding="UTF-8"?>
-<dispatch>
-    <dispatched_at>{$dateTime->format($this->timestampFormat)}</dispatched_at>
-    <courier>{$courier}</courier>
-    <consignment_number>{$consignmentNumber}</consignment_number>
-    <tracking_url>{$trackingUrl}</tracking_url>
-</dispatch>
-EOH;
+        return ('xml' == $this->requestFormat) ? 
+                sprintf(
+                        self::XML_DISPATCH_PAYLOAD, 
+                        $dateTime->format($this->timestampFormat), 
+                        $courier, $consignmentNumber, $trackingUrl
+                        ) :
+                sprintf(
+                        self::JSON_DISPATCH_PAYLOAD, 
+                        $dateTime->format($this->timestampFormat), 
+                        $courier, $consignmentNumber, $trackingUrl
+                        );
     }
 
     private function generateCancelOrderPayload($reason)
     {
-        return <<<EOH
-<?xml version="1.0" encoding="UTF-8"?>
-<cancel>
-    <reason>{$reason}</reason>
-</cancel>
-EOH;
+        return ('xml' == $this->requestFormat) ? 
+                sprintf(self::XML_CANCEL_PAYLOAD, $reason) :
+                sprintf(self::JSON_CANCEL_PAYLOAD, $reason);
     }
 
     private function call(RequestInterface $request)
