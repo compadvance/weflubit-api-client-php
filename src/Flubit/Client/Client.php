@@ -420,7 +420,7 @@ EOH;
                     array()
                     );
 
-            $msg = isset($xml['message']) ? (string) $xml['message'] : (string) $xml;
+            $msg = isset($xml['message']) ? (string) $xml['message'] : print_r($xml,true);
 
             if ($statusCode === 401) {
 
