@@ -40,22 +40,29 @@ class Client implements ClientInterface
         'text/csv' => 'csv'
     );
     
+    /**
+     * @var string
+     */
     const DEFAULT_REQUEST_FORMAT = 'xml';
     
+    /**
+     * @var string
+     */
     const DEFAULT_RESPONSE_FORMAT = 'xml';
     
     /**
-     *
      * @var string 
      */
-    private $requestFormat = self::DEFAULT_REQUEST_FORMAT;
+    private $requestFormat;
     
     /**
-     *
      * @var string 
      */
-    private $responseFormat = self::DEFAULT_RESPONSE_FORMAT;
+    private $responseFormat;
     
+    /**
+     * @var string
+     */
     const XML_DISPATCH_PAYLOAD = <<<EOH
 <?xml version="1.0" encoding="UTF-8"?>
 <dispatch>
@@ -66,6 +73,9 @@ class Client implements ClientInterface
 </dispatch>
 EOH;
     
+    /**
+     * @var string
+     */
     const JSON_DISPATCH_PAYLOAD = <<<EOH
 {
     "dispatched_at" : "%s",
@@ -75,6 +85,9 @@ EOH;
 }
 EOH;
     
+    /**
+     * @var string
+     */
     const XML_CANCEL_PAYLOAD = <<<EOH
 <?xml version="1.0" encoding="UTF-8"?>
 <cancel>
@@ -82,6 +95,9 @@ EOH;
 </cancel>
 EOH;
     
+    /**
+     * @var string
+     */
     const JSON_CANCEL_PAYLOAD = <<<EOH
 {
     "reason" : "%s"
@@ -97,7 +113,10 @@ EOH;
     {
         $this->apiKey = $apiKey;
         $this->apiSecret = $apiSecret;
-
+        
+        $this->requestFormat = self::DEFAULT_REQUEST_FORMAT;
+        $this->responseFormat = self::DEFAULT_RESPONSE_FORMAT;
+        
         $this->client = new GuzzleClient('http://{domain}/{version}', array(
             'domain'  => $domain,
             'version' => '1'
