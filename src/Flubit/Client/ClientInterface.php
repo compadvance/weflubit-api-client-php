@@ -106,6 +106,16 @@ interface ClientInterface
      * @return \SimpleXMLElement
      */
     public function getProductsFeed($feedID);
+    
+    /**
+     * 
+     * @param type $feedID
+     * @param type $page
+     * @param type $limit
+     * 
+     * @return \SimpleXMLElement
+     */
+    public function getProductsFeedErrors($feedID, $page, $limit);
 
     /**
      * @param $productData
