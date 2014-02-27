@@ -408,7 +408,7 @@ EOH;
                     array()
                     );
 
-            $msg = (string)$xml['message'];
+            $msg = isset($xml['message']) ? (string) $xml['message'] : (string) $xml;
 
             if ($statusCode === 401) {
 
