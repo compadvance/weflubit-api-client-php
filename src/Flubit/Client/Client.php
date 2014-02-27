@@ -332,6 +332,18 @@ EOH;
 
         return $this->call($request);
     }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function getProductsFeedErrors($feedID, $page, $limit)
+    {
+        $request = $this->getGetRequest(
+            sprintf('products/feed/%s/errors.%s?page=%s&limit=%s', $feedID, $page, $limit)
+        );
+
+        return $this->call($request);
+    }
 
     /**
      * {@inheritdoc}
