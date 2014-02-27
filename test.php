@@ -130,6 +130,39 @@ try {
 }
 
 ########################################
+# Check feed errors
+########################################
+
+try {
+
+    $page = 0;
+    $limit = 1;
+    $xml = $client->getProductsFeedErrors($feedId,$page,$limit);
+    
+    echo $xml->asXML();
+
+} catch (\Flubit\Exception\BadMethodCallException $e) {
+    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
+}
+
+########################################
+# Check feed errors - JSON
+########################################
+
+try {
+
+    $page = 0;
+    $limit = 1;
+    $xml = $client->setResponseFormat('json')
+            ->getProductsFeedErrors($feedId,$page,$limit);
+    
+    echo json_encode($xml);
+
+} catch (\Flubit\Exception\BadMethodCallException $e) {
+    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
+}
+
+########################################
 # Get orders awaiting dispatch
 ########################################
 
