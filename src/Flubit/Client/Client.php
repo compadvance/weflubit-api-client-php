@@ -282,7 +282,7 @@ EOH;
     /**
      * {@inheritdoc}
      */
-    public function getOrders($from, $status)
+    public function getOrders($status, \DateTime $from = null)
     {
         $params = array();
         
