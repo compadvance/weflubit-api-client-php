@@ -168,7 +168,7 @@ try {
 
 try {
 
-    $xml = $client->getOrders(new \DateTime("-1 year"), 'awaiting_dispatch');
+    $xml = $client->getOrders("-1 year", 'awaiting_dispatch');
 
 } catch (\Flubit\Exception\BadMethodCallException $e) {
 
