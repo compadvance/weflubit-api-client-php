@@ -339,7 +339,8 @@ EOH;
     public function getProductsFeedErrors($feedID, $page, $limit)
     {
         $request = $this->getGetRequest(
-            sprintf('products/feed/%s/errors.%s?page=%s&limit=%s', $feedID, $this->responseFormat, $page, $limit)
+            sprintf('products/feed/%s/errors.%s', $feedID, $this->responseFormat),
+            array('page' => $page, 'limit' => $limit)
         );
 
         return $this->call($request);
