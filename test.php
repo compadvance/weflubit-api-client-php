@@ -50,6 +50,27 @@ try {
 }
 
 ##############################
+# Post a feed - CSV
+##############################
+
+$productXml = <<<EOH
+sku,stock
+"174",999
+EOH;
+
+try {
+
+    $xml = $client->setRequestFormat('csv')
+            ->createProducts($productXml);
+    $feedId = (string) $xml;
+    printf("Feed %s created\n", $feedId);
+
+} catch (\Flubit\Exception\UnauthorizedException $e) {
+
+    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
+}
+
+##############################
 # Call product search
 ##############################
 try {
@@ -64,6 +85,23 @@ try {
     printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
 }
 
+##############################
+# Call product search - JSON
+##############################
+try {
+    $isActive = true;
+    $page     = 1;
+    $limit    = 10;
+
+    $xml = $client->setResponseFormat('json')
+            ->getProducts($isActive, $limit, $page);
+    
+    echo json_encode($xml);
+
+} catch (\Flubit\Exception\UnauthorizedException $e) {
+    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
+}
+
 ########################################
 # Check feed status
 ########################################
@@ -72,6 +110,53 @@ try {
 
     $xml = $client->getProductsFeed($feedId);
     printf("Feed %s has status: %s\n", $feedId, (string) $xml->attributes()->status);
+
+} catch (\Flubit\Exception\BadMethodCallException $e) {
+    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
+}
+
+########################################
+# Check feed status - JSON
+########################################
+
+try {
+
+    $xml = $client->setResponseFormat('json')
+            ->getProductsFeed($feedId);
+    printf("Feed %s has status: %s\n", $feedId, $xml['status']);
+
+} catch (\Flubit\Exception\BadMethodCallException $e) {
+    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
+}
+
+########################################
+# Check feed errors
+########################################
+
+try {
+
+    $page = 0;
+    $limit = 1;
+    $xml = $client->getProductsFeedErrors($feedId,$page,$limit);
+    
+    echo $xml->asXML();
+
+} catch (\Flubit\Exception\BadMethodCallException $e) {
+    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
+}
+
+########################################
+# Check feed errors - JSON
+########################################
+
+try {
+
+    $page = 0;
+    $limit = 1;
+    $xml = $client->setResponseFormat('json')
+            ->getProductsFeedErrors($feedId,$page,$limit);
+    
+    echo json_encode($xml);
 
 } catch (\Flubit\Exception\BadMethodCallException $e) {
     printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
@@ -111,15 +196,52 @@ try {
 }
 
 ########################################
+# Dispatch an order - JSON
+########################################
+
+try {
+
+    $xml = $client->setRequestFormat('json')
+            ->dispatchOrderByFlubitId(
+                1193,
+                new DateTime(),
+                array(
+                    'courier'            => 'JB',
+                    'consignment_number' => '123456789',
+                    'tracking_url'       => 'http://someurl.com/tracking'
+                )
+            );
+
+} catch (\Flubit\Exception\BadMethodCallException $e) {
+    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
+}
+
+########################################
 # Cancel an order
 ########################################
 
 try {
 
     $xml = $client->cancelOrderByMerchantOrderId(
-        1,
-        "Wrong colour."
-    );
+                1,
+                "Wrong colour."
+            );
+
+} catch (\Flubit\Exception\BadMethodCallException $e) {
+    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
+}
+
+########################################
+# Cancel an order - JSON
+########################################
+
+try {
+
+    $xml = $client->setRequestFormat('json')
+            ->cancelOrderByMerchantOrderId(
+                1,
+                "Wrong colour."
+            );
 
 } catch (\Flubit\Exception\BadMethodCallException $e) {
     printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());

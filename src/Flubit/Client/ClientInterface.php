@@ -4,6 +4,32 @@ namespace Flubit\Client;
 
 interface ClientInterface
 {
+     /**
+     * 
+     * @param string $format
+     * @return Client
+     */
+    public function setResponseFormat($format);
+    
+    /**
+     * 
+     * @return string
+     */
+    public function getResponseFormat();
+    
+    /**
+     * 
+     * @param string $format
+     * @return Client
+     */
+    public function setRequestFormat($format);
+    
+    /**
+     * 
+     * @return string
+     */
+    public function getRequestFormat();
+    
     /**
      * @return \SimpleXMLElement
      */
@@ -80,6 +106,16 @@ interface ClientInterface
      * @return \SimpleXMLElement
      */
     public function getProductsFeed($feedID);
+    
+    /**
+     * 
+     * @param type $feedID
+     * @param type $page
+     * @param type $limit
+     * 
+     * @return \SimpleXMLElement
+     */
+    public function getProductsFeedErrors($feedID, $page, $limit);
 
     /**
      * @param $productData
@@ -87,7 +123,7 @@ interface ClientInterface
      *
      * @return \SimpleXMLElement
      */
-    public function createProducts($productData, $dataFormat = 'xml');
+    public function createProducts($productData);
 
     /**
      * @param $productData
@@ -95,5 +131,5 @@ interface ClientInterface
      *
      * @return \SimpleXMLElement
      */
-    public function updateProducts($productData, $dataFormat = 'xml');
+    public function updateProducts($productData);
 }
