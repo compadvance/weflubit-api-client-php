@@ -84,12 +84,12 @@ interface ClientInterface
     public function refundOrderByMerchantOrderId($id);
 
     /**
-     * @param \DateTime $from
-     * @param string    $status
+     * @param string       $status
+     * @param \DateTime    $from
      *
      * @return \SimpleXMLElement
      */
-    public function getOrders(\DateTime $from, $status);
+    public function getOrders($status, \DateTime $from = null);
 
     /**
      * @param boolean $isActive

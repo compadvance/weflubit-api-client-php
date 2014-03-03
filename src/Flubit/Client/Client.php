@@ -282,14 +282,21 @@ EOH;
     /**
      * {@inheritdoc}
      */
-    public function getOrders(\DateTime $from, $status)
+    public function getOrders($status, \DateTime $from = null)
     {
+        $params = array();
+        
+        if (!empty($from)) {
+            $params['from'] = (new \DateTime($from))->format($this->timestampFormat);
+        }
+        
+        if (!empty($status)) {
+            $params['status'] = $status;
+        }
+        
         $request = $this->getGetRequest(
             sprintf('orders/filter.%s', $this->responseFormat),
-            array(
-                'from' => $from->format($this->timestampFormat),
-                'status' => $status
-            )
+            $params
         );
 
         return $this->call($request);
