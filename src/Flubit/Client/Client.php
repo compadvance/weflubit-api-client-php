@@ -287,7 +287,7 @@ EOH;
         $params = array();
         
         if (!empty($from)) {
-            $params['from'] = (new \DateTime($from))->format($this->timestampFormat);
+            $params['from'] = $from->format($this->timestampFormat);
         }
         
         if (!empty($status)) {
