@@ -430,10 +430,10 @@ EOH;
             
             if ($statusCode === 401) {
 
-                throw new UnauthorizedException($xml->asXML(), $statusCode);
+                throw new UnauthorizedException(is_object($xml) ? $xml->asXML() : json_encode($xml, JSON_PRETTY_PRINT), $statusCode);
             } else {
 
-                throw new BadMethodCallException($xml->asXML(), $statusCode);
+                throw new BadMethodCallException(is_object($xml) ? $xml->asXML() : json_encode($xml, JSON_PRETTY_PRINT), $statusCode);
             }
         }
     }
