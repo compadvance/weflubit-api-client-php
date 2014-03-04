@@ -427,16 +427,13 @@ EOH;
                     array($e->getResponse(), self::$allowedContentTypes[$responseFormat]),
                     array()
                     );
-
-            $xml = $xml['error'];
-            $msg = isset($xml['message']) ? (string) $xml['message'] : print_r($xml,true);
-
+            
             if ($statusCode === 401) {
 
-                throw new UnauthorizedException($msg, (int)$xml['code']);
+                throw new UnauthorizedException($xml->asXML(), $statusCode);
             } else {
 
-                throw new BadMethodCallException($msg, $statusCode);
+                throw new BadMethodCallException($xml->asXML(), $statusCode);
             }
         }
     }
