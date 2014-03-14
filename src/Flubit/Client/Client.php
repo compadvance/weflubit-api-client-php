@@ -105,11 +105,12 @@ EOH;
 EOH;
 
     /**
-     * @param string $apiKey
-     * @param string $apiSecret
-     * @param string $domain
+     * @param string    $apiKey
+     * @param string    $apiSecret
+     * @param string    $domain
+     * @param boolean   $useHTTPS
      */
-    public function __construct($apiKey, $apiSecret, $domain = 'api.weflubit.com')
+    public function __construct($apiKey, $apiSecret, $domain = 'api.weflubit.com', $useHTTPS = false)
     {
         $this->apiKey = $apiKey;
         $this->apiSecret = $apiSecret;
@@ -117,9 +118,12 @@ EOH;
         $this->requestFormat = self::DEFAULT_REQUEST_FORMAT;
         $this->responseFormat = self::DEFAULT_RESPONSE_FORMAT;
         
-        $this->client = new GuzzleClient('http://{domain}/{version}', array(
-            'domain'  => $domain,
-            'version' => '1'
+        $protocol = (true == $useHTTPS) ? 'https' : 'http';
+        
+        $this->client = new GuzzleClient('{protocol}://{domain}/{version}', array(
+            'protocol'  => $protocol,
+            'domain'    => $domain,
+            'version'   => '1'
         ));
     }
     
