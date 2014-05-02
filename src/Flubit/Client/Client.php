@@ -309,23 +309,26 @@ EOH;
     public function getProducts($isActive, $limit, $page, $sku = null)
     {
         $url = sprintf('/1/products/filter.%s', $this->responseFormat);
+        
+        $params = array();
+        
+        if (!empty($isActive)) {
+            $params['is_active'] = $isActive;
+        }
 
         if ($sku) {
+            $params['sku'] = $sku;
             $request = $this->getGetRequest(
                 $url,
-                array(
-                    'is_active' => $isActive,
-                    'sku'       => $sku,
-                )
+                $params
             );
         } else {
+            $params['limit'] = $limit;
+            $params['page']  = $page;
+            
             $request = $this->getGetRequest(
                 $url,
-                array(
-                    'is_active' => $isActive,
-                    'limit'     => $limit,
-                    'page'      => $page,
-                )
+                $params
             );
         }
 
