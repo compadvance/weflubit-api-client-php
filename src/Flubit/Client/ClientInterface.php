@@ -31,7 +31,7 @@ interface ClientInterface
     public function getRequestFormat();
     
     /**
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|array
      */
     public function getAccountStatus();
 
