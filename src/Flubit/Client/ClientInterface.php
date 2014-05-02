@@ -40,7 +40,7 @@ interface ClientInterface
      * @param \DateTime $dateTime
      * @param array     $params
      *
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|string
      */
     public function dispatchOrderByFlubitId($id, \DateTime $dateTime, array $params);
 
@@ -49,7 +49,7 @@ interface ClientInterface
      * @param \DateTime $dateTime
      * @param array     $params
      *
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|string
      */
     public function dispatchOrderByMerchantOrderId($id, \DateTime $dateTime, array $params);
 
@@ -57,7 +57,7 @@ interface ClientInterface
      * @param string $id
      * @param string $reason
      *
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|string
      */
     public function cancelOrderByFlubitId($id, $reason);
 
@@ -65,21 +65,21 @@ interface ClientInterface
      * @param string $id
      * @param string $reason
      *
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|string
      */
     public function cancelOrderByMerchantOrderId($id, $reason);
 
     /**
      * @param string $id
      *
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|string
      */
     public function refundOrderByFlubitId($id);
 
     /**
      * @param string $id
      *
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|string
      */
     public function refundOrderByMerchantOrderId($id);
 
@@ -87,7 +87,7 @@ interface ClientInterface
      * @param string       $status
      * @param \DateTime    $from
      *
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|string
      */
     public function getOrders($status, \DateTime $from = null);
 
@@ -96,7 +96,7 @@ interface ClientInterface
      * @param integer $limit
      * @param integer $page
      *
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|string
      */
     public function getProducts(
         $isActive = '', 
@@ -108,7 +108,7 @@ interface ClientInterface
     /**
      * @param string $feedID
      *
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|string
      */
     public function getProductsFeed($feedID);
     
@@ -118,7 +118,7 @@ interface ClientInterface
      * @param type $page
      * @param type $limit
      * 
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|string
      */
     public function getProductsFeedErrors($feedID, $page, $limit);
 
@@ -126,7 +126,7 @@ interface ClientInterface
      * @param $productData
      * @param $dataFormat
      *
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|string
      */
     public function createProducts($productData);
 
@@ -134,7 +134,7 @@ interface ClientInterface
      * @param $productData
      * @param $dataFormat
      *
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|string
      */
     public function updateProducts($productData);
 }

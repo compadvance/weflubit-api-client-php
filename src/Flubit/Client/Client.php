@@ -306,6 +306,9 @@ EOH;
         return $this->call($request);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getProducts(
         $isActive = '', 
         $limit = null, 
