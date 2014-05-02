@@ -306,7 +306,12 @@ EOH;
         return $this->call($request);
     }
 
-    public function getProducts($isActive, $limit, $page, $sku = null)
+    public function getProducts(
+        $isActive = '', 
+        $limit = null, 
+        $page = null, 
+        $sku = null
+    )
     {
         $url = sprintf('/1/products/filter.%s', $this->responseFormat);
         

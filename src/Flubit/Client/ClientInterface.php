@@ -98,7 +98,12 @@ interface ClientInterface
      *
      * @return \SimpleXMLElement
      */
-    public function getProducts($isActive, $limit, $page, $sku = null);
+    public function getProducts(
+        $isActive = '', 
+        $limit = null, 
+        $page = null, 
+        $sku = null
+    );
 
     /**
      * @param string $feedID
