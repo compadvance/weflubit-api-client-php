@@ -306,21 +306,13 @@ EOH;
         return $this->call($request);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getProducts(
-        $isActive = '', 
-        $limit = null, 
-        $page = null, 
-        $sku = null
-    )
+    public function getProducts($isActive, $limit, $page, $sku = null)
     {
         $url = sprintf('/1/products/filter.%s', $this->responseFormat);
         
         $params = array();
         
-        if ($isActive !== '') {
+        if ($isActive !== '' && !is_null($isActive)) {
             $params['is_active'] = $isActive;
         }
 
