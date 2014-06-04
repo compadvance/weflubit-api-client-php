@@ -31,7 +31,7 @@ interface ClientInterface
     public function getRequestFormat();
     
     /**
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|array
      */
     public function getAccountStatus();
 
@@ -40,7 +40,7 @@ interface ClientInterface
      * @param \DateTime $dateTime
      * @param array     $params
      *
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|array
      */
     public function dispatchOrderByFlubitId($id, \DateTime $dateTime, array $params);
 
@@ -49,7 +49,7 @@ interface ClientInterface
      * @param \DateTime $dateTime
      * @param array     $params
      *
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|array
      */
     public function dispatchOrderByMerchantOrderId($id, \DateTime $dateTime, array $params);
 
@@ -57,7 +57,7 @@ interface ClientInterface
      * @param string $id
      * @param string $reason
      *
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|array
      */
     public function cancelOrderByFlubitId($id, $reason);
 
@@ -65,21 +65,21 @@ interface ClientInterface
      * @param string $id
      * @param string $reason
      *
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|array
      */
     public function cancelOrderByMerchantOrderId($id, $reason);
 
     /**
      * @param string $id
      *
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|array
      */
     public function refundOrderByFlubitId($id);
 
     /**
      * @param string $id
      *
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|array
      */
     public function refundOrderByMerchantOrderId($id);
 
@@ -87,7 +87,7 @@ interface ClientInterface
      * @param string       $status
      * @param \DateTime    $from
      *
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|array
      */
     public function getOrders($status, \DateTime $from = null);
 
@@ -96,14 +96,14 @@ interface ClientInterface
      * @param integer $limit
      * @param integer $page
      *
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|array
      */
     public function getProducts($isActive, $limit, $page, $sku = null);
 
     /**
      * @param string $feedID
      *
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|array
      */
     public function getProductsFeed($feedID);
     
@@ -113,7 +113,7 @@ interface ClientInterface
      * @param type $page
      * @param type $limit
      * 
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|array
      */
     public function getProductsFeedErrors($feedID, $page, $limit);
 
@@ -121,7 +121,7 @@ interface ClientInterface
      * @param $productData
      * @param $dataFormat
      *
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|array
      */
     public function createProducts($productData);
 
@@ -129,7 +129,7 @@ interface ClientInterface
      * @param $productData
      * @param $dataFormat
      *
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|array
      */
     public function updateProducts($productData);
 }
