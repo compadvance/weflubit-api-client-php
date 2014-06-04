@@ -394,18 +394,24 @@ EOH;
         $courier = isset($params['courier']) ? $params['courier'] : '';
         $consignmentNumber = isset($params['consignment_number']) ? $params['consignment_number'] : '';
         $trackingUrl = isset($params['tracking_url']) ? $params['tracking_url'] : '';
+        $payLoad = null;
 
-        return ('xml' == $this->requestFormat) ? 
-                sprintf(
+        if ('xml' == $this->requestFormat) {
+            
+            $payLoad = sprintf(
                         self::XML_DISPATCH_PAYLOAD, 
                         $dateTime->format($this->timestampFormat), 
                         $courier, $consignmentNumber, $trackingUrl
-                        ) :
-                sprintf(
+                        );
+        } else {
+            $payLoad = sprintf(
                         self::JSON_DISPATCH_PAYLOAD, 
                         $dateTime->format($this->timestampFormat), 
                         $courier, $consignmentNumber, $trackingUrl
                         );
+        }
+        
+        return $payLoad;
     }
 
     private function generateCancelOrderPayload($reason)
