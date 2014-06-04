@@ -312,7 +312,7 @@ EOH;
         
         $params = array();
         
-        if ($isActive !== '' && !is_null($isActive)) {
+        if ($isActive) {
             $params['is_active'] = $isActive;
         }
 
