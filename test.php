@@ -22,6 +22,7 @@ try {
     printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
 }
 
+// The following exit ensures that no test data is submitted to the API.
 exit();
 
 ##############################
