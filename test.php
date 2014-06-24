@@ -22,6 +22,8 @@ try {
     printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
 }
 
+exit();
+
 ##############################
 # Post a feed
 ##############################
