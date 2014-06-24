@@ -6,4 +6,4 @@
  */
 define('CONSUMER_KEY', 'CONSUMER_KEY_HERE');
 define('CONSUMER_SECRET', 'CONSUMER_SECRET_HERE');
-define('DOMAIN', 'api.weflubit.com');
+define('DOMAIN', 'api.sandbox.weflubit.com');
