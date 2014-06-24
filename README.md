@@ -36,7 +36,7 @@ define('DOMAIN', 'api.sandbox.weflubit.com');
 
 ### Run the test script
 
-You can run the PHP test script to call the GET account/status API endpoint. A successful respnse means that everything is configured correctly (Note: The script terminates at [line 25] (https://github.com/Flubit/merchant-api-client-php/blob/master/test.php#L25) to prevent test data being sent to the API. 
+You can run the PHP test script to call the GET account/status API endpoint. A successful respnse means that everything is configured correctly (Note: The script terminates at [line 25] (https://github.com/Flubit/merchant-api-client-php/blob/master/test.php#L25) to prevent test data being sent to the API). 
 
 ```
 php test.php
