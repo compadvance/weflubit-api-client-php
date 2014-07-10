@@ -103,6 +103,27 @@ EOH;
     "reason" : "%s"
 }
 EOH;
+    
+    /**
+     * @var string
+     */
+    const XML_REFUND_PAYLOAD = <<<EOH
+<?xml version="1.0" encoding="UTF-8"?>
+<refund>
+    <reason>%s</reason>
+    <amount>%s</amount>
+</refund>
+EOH;
+    
+    /**
+     * @var string
+     */
+    const JSON_REFUND_PAYLOAD = <<<EOH
+{
+    "reason" : "%s",
+    "amount" : %s
+}
+EOH;
 
     /**
      * @param string    $apiKey
@@ -254,11 +275,13 @@ EOH;
     /**
      * {@inheritdoc}
      */
-    public function refundOrderByFlubitId($id)
+    public function refundOrderByFlubitId($id, $reason, $amount)
     {
+        $payload = $this->generateRefundOrderPayload($reason, $amount);
+        
         $request = $this->getPostRequest(
             sprintf('orders/refund.%s', $this->responseFormat),
-            null,
+            $payload,
             array(
                 'flubit_order_id' => $id
             )
@@ -270,11 +293,13 @@ EOH;
     /**
      * {@inheritdoc}
      */
-    public function refundOrderByMerchantOrderId($id)
+    public function refundOrderByMerchantOrderId($id, $reason, $amount)
     {
+        $payload = $this->generateRefundOrderPayload($reason, $amount);
+        
         $request = $this->getPostRequest(
             sprintf('orders/refund.%s', $this->responseFormat),
-            null,
+            $payload,
             array(
                 'merchant_order_id' => $id
             )
@@ -419,6 +444,13 @@ EOH;
         return ('xml' == $this->requestFormat) ? 
                 sprintf(self::XML_CANCEL_PAYLOAD, $reason) :
                 sprintf(self::JSON_CANCEL_PAYLOAD, $reason);
+    }
+    
+    private function generateRefundOrderPayload($reason, $amount)
+    {
+        return ('xml' == $this->requestFormat) ? 
+                sprintf(self::XML_REFUND_PAYLOAD, $reason, $amount) :
+                sprintf(self::JSON_REFUND_PAYLOAD, $reason, $amount);
     }
 
     private function call(RequestInterface $request)

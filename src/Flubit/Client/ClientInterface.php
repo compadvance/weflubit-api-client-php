@@ -74,14 +74,14 @@ interface ClientInterface
      *
      * @return \SimpleXMLElement|array
      */
-    public function refundOrderByFlubitId($id);
+    public function refundOrderByFlubitId($id, $reason, $amount);
 
     /**
      * @param string $id
      *
      * @return \SimpleXMLElement|array
      */
-    public function refundOrderByMerchantOrderId($id);
+    public function refundOrderByMerchantOrderId($id, $reason, $amount);
 
     /**
      * @param string       $status
