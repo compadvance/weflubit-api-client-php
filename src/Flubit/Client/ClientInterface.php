@@ -71,6 +71,8 @@ interface ClientInterface
 
     /**
      * @param string $id
+     * @param string $reason
+     * @param string $amount
      *
      * @return \SimpleXMLElement|array
      */
@@ -78,6 +80,8 @@ interface ClientInterface
 
     /**
      * @param string $id
+     * @param string $reason
+     * @param string $amount
      *
      * @return \SimpleXMLElement|array
      */
