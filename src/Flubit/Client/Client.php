@@ -400,6 +400,19 @@ EOH;
 
         return $this->call($request);
     }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function createSingleProduct($productData)
+    {
+        $request = $this->getPostRequest(
+            sprintf('products.%s',$this->responseFormat),
+            $productData
+        );
+
+        return $this->call($request);
+    }
 
     /**
      * {@inheritdoc}
@@ -408,6 +421,20 @@ EOH;
     {
         $request = $this->getPostRequest(
             sprintf('products/feed.%s',$this->responseFormat),
+            $productData
+        );
+
+        return $this->call($request);
+    }
+    
+    /**
+     * 
+     * {@inheritdoc}
+     */
+    public function updateSingleProduct($productData)
+    {
+        $request = $this->getPatchRequest(
+            sprintf('products.%s',$this->responseFormat),
             $productData
         );
 
@@ -505,6 +532,25 @@ EOH;
         $formats = array_flip(self::$allowedContentTypes);
         $request = $this->client
             ->post(
+                sprintf('%s?%s', $uri, http_build_query($queryParams)),
+                array(
+                    'accept'     => $formats[$this->responseFormat],
+                    'auth-token' => $this->generateAuthToken(),
+                    'Content-Type' => $formats[$this->requestFormat]
+                ),
+                $payload,
+                array('allow_redirects' => false)
+            );
+        $this->resetFormats();
+        
+        return $request;
+    }
+    
+    private function getPatchRequest($uri, $payload = null, array $queryParams = array())
+    {
+        $formats = array_flip(self::$allowedContentTypes);
+        $request = $this->client
+            ->patch(
                 sprintf('%s?%s', $uri, http_build_query($queryParams)),
                 array(
                     'accept'     => $formats[$this->responseFormat],
