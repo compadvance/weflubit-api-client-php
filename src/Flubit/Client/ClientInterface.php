@@ -71,17 +71,21 @@ interface ClientInterface
 
     /**
      * @param string $id
+     * @param string $reason
+     * @param string $amount
      *
      * @return \SimpleXMLElement|array
      */
-    public function refundOrderByFlubitId($id);
+    public function refundOrderByFlubitId($id, $reason, $amount);
 
     /**
      * @param string $id
+     * @param string $reason
+     * @param string $amount
      *
      * @return \SimpleXMLElement|array
      */
-    public function refundOrderByMerchantOrderId($id);
+    public function refundOrderByMerchantOrderId($id, $reason, $amount);
 
     /**
      * @param string       $status
@@ -119,17 +123,31 @@ interface ClientInterface
 
     /**
      * @param $productData
-     * @param $dataFormat
      *
      * @return \SimpleXMLElement|array
      */
     public function createProducts($productData);
+    
+    /**
+     * 
+     * @param $productData
+     * 
+     * @return \SimpleXMLElement|array
+     */
+    public function createSingleProduct($productData);
 
     /**
      * @param $productData
-     * @param $dataFormat
      *
      * @return \SimpleXMLElement|array
      */
     public function updateProducts($productData);
+    
+    /**
+     * 
+     * @param $productData
+     * 
+     * @return \SimpleXMLElement|array
+     */
+    public function updateSingleProduct($productData);
 }

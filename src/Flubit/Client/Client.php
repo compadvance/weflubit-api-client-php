@@ -103,6 +103,27 @@ EOH;
     "reason" : "%s"
 }
 EOH;
+    
+    /**
+     * @var string
+     */
+    const XML_REFUND_PAYLOAD = <<<EOH
+<?xml version="1.0" encoding="UTF-8"?>
+<refund>
+    <reason>%s</reason>
+    <amount>%s</amount>
+</refund>
+EOH;
+    
+    /**
+     * @var string
+     */
+    const JSON_REFUND_PAYLOAD = <<<EOH
+{
+    "reason" : "%s",
+    "amount" : %s
+}
+EOH;
 
     /**
      * @param string    $apiKey
@@ -254,11 +275,13 @@ EOH;
     /**
      * {@inheritdoc}
      */
-    public function refundOrderByFlubitId($id)
+    public function refundOrderByFlubitId($id, $reason, $amount)
     {
+        $payload = $this->generateRefundOrderPayload($reason, $amount);
+        
         $request = $this->getPostRequest(
             sprintf('orders/refund.%s', $this->responseFormat),
-            null,
+            $payload,
             array(
                 'flubit_order_id' => $id
             )
@@ -270,11 +293,13 @@ EOH;
     /**
      * {@inheritdoc}
      */
-    public function refundOrderByMerchantOrderId($id)
+    public function refundOrderByMerchantOrderId($id, $reason, $amount)
     {
+        $payload = $this->generateRefundOrderPayload($reason, $amount);
+        
         $request = $this->getPostRequest(
             sprintf('orders/refund.%s', $this->responseFormat),
-            null,
+            $payload,
             array(
                 'merchant_order_id' => $id
             )
@@ -375,6 +400,19 @@ EOH;
 
         return $this->call($request);
     }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function createSingleProduct($productData)
+    {
+        $request = $this->getPostRequest(
+            sprintf('products.%s',$this->responseFormat),
+            $productData
+        );
+
+        return $this->call($request);
+    }
 
     /**
      * {@inheritdoc}
@@ -383,6 +421,20 @@ EOH;
     {
         $request = $this->getPostRequest(
             sprintf('products/feed.%s',$this->responseFormat),
+            $productData
+        );
+
+        return $this->call($request);
+    }
+    
+    /**
+     * 
+     * {@inheritdoc}
+     */
+    public function updateSingleProduct($productData)
+    {
+        $request = $this->getPatchRequest(
+            sprintf('products.%s',$this->responseFormat),
             $productData
         );
 
@@ -419,6 +471,13 @@ EOH;
         return ('xml' == $this->requestFormat) ? 
                 sprintf(self::XML_CANCEL_PAYLOAD, $reason) :
                 sprintf(self::JSON_CANCEL_PAYLOAD, $reason);
+    }
+    
+    private function generateRefundOrderPayload($reason, $amount)
+    {
+        return ('xml' == $this->requestFormat) ? 
+                sprintf(self::XML_REFUND_PAYLOAD, $reason, $amount) :
+                sprintf(self::JSON_REFUND_PAYLOAD, $reason, $amount);
     }
 
     private function call(RequestInterface $request)
@@ -473,6 +532,25 @@ EOH;
         $formats = array_flip(self::$allowedContentTypes);
         $request = $this->client
             ->post(
+                sprintf('%s?%s', $uri, http_build_query($queryParams)),
+                array(
+                    'accept'     => $formats[$this->responseFormat],
+                    'auth-token' => $this->generateAuthToken(),
+                    'Content-Type' => $formats[$this->requestFormat]
+                ),
+                $payload,
+                array('allow_redirects' => false)
+            );
+        $this->resetFormats();
+        
+        return $request;
+    }
+    
+    private function getPatchRequest($uri, $payload = null, array $queryParams = array())
+    {
+        $formats = array_flip(self::$allowedContentTypes);
+        $request = $this->client
+            ->patch(
                 sprintf('%s?%s', $uri, http_build_query($queryParams)),
                 array(
                     'accept'     => $formats[$this->responseFormat],
