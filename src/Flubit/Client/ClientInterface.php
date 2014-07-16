@@ -123,17 +123,31 @@ interface ClientInterface
 
     /**
      * @param $productData
-     * @param $dataFormat
      *
      * @return \SimpleXMLElement|array
      */
     public function createProducts($productData);
+    
+    /**
+     * 
+     * @param $productData
+     * 
+     * @return \SimpleXMLElement|array
+     */
+    public function createSingleProduct($productData);
 
     /**
      * @param $productData
-     * @param $dataFormat
      *
      * @return \SimpleXMLElement|array
      */
     public function updateProducts($productData);
+    
+    /**
+     * 
+     * @param $productData
+     * 
+     * @return \SimpleXMLElement|array
+     */
+    public function updateSingleProduct($productData);
 }
