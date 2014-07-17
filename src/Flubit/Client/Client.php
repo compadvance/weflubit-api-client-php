@@ -311,7 +311,7 @@ EOH;
     /**
      * {@inheritdoc}
      */
-    public function getOrders($status, \DateTime $from = null)
+    public function getOrders($status, \DateTime $from = null, $page = 1, $limit = 100)
     {
         $params = array();
         
@@ -322,7 +322,10 @@ EOH;
         if (!empty($status)) {
             $params['status'] = $status;
         }
-        
+
+        $params['page'] = $page;
+        $params['limit'] = $limit;
+
         $request = $this->getGetRequest(
             sprintf('orders/filter.%s', $this->responseFormat),
             $params
