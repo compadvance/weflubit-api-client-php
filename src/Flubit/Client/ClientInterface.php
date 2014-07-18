@@ -88,17 +88,20 @@ interface ClientInterface
     public function refundOrderByMerchantOrderId($id, $reason, $amount);
 
     /**
-     * @param string       $status
-     * @param \DateTime    $from
+     * @param           $status
+     * @param \DateTime $from
+     * @param int       $page
+     * @param int       $limit
      *
      * @return \SimpleXMLElement|array
      */
-    public function getOrders($status, \DateTime $from = null);
+    public function getOrders($status, \DateTime $from = null, $page = 1, $limit = 100);
 
     /**
-     * @param boolean $isActive
-     * @param integer $limit
-     * @param integer $page
+     * @param string $isActive
+     * @param        $limit
+     * @param        $page
+     * @param null   $sku
      *
      * @return \SimpleXMLElement|array
      */
