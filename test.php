@@ -98,7 +98,53 @@ try {
 
     $xml = $client->setResponseFormat('json')
             ->getProducts($isActive, $limit, $page);
-    
+
+    echo json_encode($xml);
+
+} catch (\Flubit\Exception\UnauthorizedException $e) {
+    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
+}
+
+##############################
+# Call product search by SKUs
+##############################
+try {
+
+$skus = <<<EOH
+<?xml version="1.0" encoding="UTF-8"?>
+<skus>
+    <sku>SKU1</sku>
+    <sku>SKU2</sku>
+    <sku>SKU3</sku>
+</skus>
+EOH;
+
+    $xml = $client->getProductsBySkus($skus);
+    echo $xml->asXML();
+
+} catch (\Flubit\Exception\UnauthorizedException $e) {
+    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
+}
+
+##############################
+# Call product search by SKUs - JSON
+##############################
+try {
+
+$skus = <<<EOH
+{
+    "skus": [
+        "SKU1",
+        "SKU2",
+        "SKU3"
+    ]
+}
+EOH;
+
+    $xml = $client->setRequestFormat('json')
+            ->setResponseFormat('json')
+            ->getProductsBySkus($skus);
+
     echo json_encode($xml);
 
 } catch (\Flubit\Exception\UnauthorizedException $e) {
@@ -141,7 +187,7 @@ try {
     $page = 0;
     $limit = 1;
     $xml = $client->getProductsFeedErrors($feedId,$page,$limit);
-    
+
     echo $xml->asXML();
 
 } catch (\Flubit\Exception\BadMethodCallException $e) {
@@ -158,7 +204,7 @@ try {
     $limit = 1;
     $xml = $client->setResponseFormat('json')
             ->getProductsFeedErrors($feedId,$page,$limit);
-    
+
     echo json_encode($xml);
 
 } catch (\Flubit\Exception\BadMethodCallException $e) {
