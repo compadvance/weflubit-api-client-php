@@ -29,37 +29,37 @@ class Client implements ClientInterface
      * @var string
      */
     private $apiSecret;
-    
+
     /**
      *
-     * @var Array 
+     * @var Array
      */
     private static $allowedContentTypes = array(
         'application/xml' => 'xml',
         'application/json' => 'json',
         'text/csv' => 'csv'
     );
-    
+
     /**
      * @var string
      */
     const DEFAULT_REQUEST_FORMAT = 'xml';
-    
+
     /**
      * @var string
      */
     const DEFAULT_RESPONSE_FORMAT = 'xml';
-    
+
     /**
-     * @var string 
+     * @var string
      */
     private $requestFormat;
-    
+
     /**
-     * @var string 
+     * @var string
      */
     private $responseFormat;
-    
+
     /**
      * @var string
      */
@@ -72,7 +72,7 @@ class Client implements ClientInterface
     <tracking_url>%s</tracking_url>
 </dispatch>
 EOH;
-    
+
     /**
      * @var string
      */
@@ -84,7 +84,7 @@ EOH;
     "tracking_url" : "%s"
 }
 EOH;
-    
+
     /**
      * @var string
      */
@@ -94,7 +94,7 @@ EOH;
     <reason>%s</reason>
 </cancel>
 EOH;
-    
+
     /**
      * @var string
      */
@@ -103,7 +103,7 @@ EOH;
     "reason" : "%s"
 }
 EOH;
-    
+
     /**
      * @var string
      */
@@ -114,7 +114,7 @@ EOH;
     <amount>%s</amount>
 </refund>
 EOH;
-    
+
     /**
      * @var string
      */
@@ -135,54 +135,54 @@ EOH;
     {
         $this->apiKey = $apiKey;
         $this->apiSecret = $apiSecret;
-        
+
         $this->requestFormat = self::DEFAULT_REQUEST_FORMAT;
         $this->responseFormat = self::DEFAULT_RESPONSE_FORMAT;
-        
+
         $protocol = (true == $useHTTPS) ? 'https' : 'http';
-        
+
         $this->client = new GuzzleClient('{protocol}://{domain}/{version}', array(
             'protocol'  => $protocol,
             'domain'    => $domain,
             'version'   => '1'
         ));
     }
-    
+
     /**
-     * 
+     *
      * @param string $format
      * @return Client
      */
     public function setResponseFormat($format)
     {
         $this->responseFormat = strtolower($format);
-        
+
         return $this;
     }
-    
+
     /**
-     * 
+     *
      * @return string
      */
     public function getResponseFormat()
     {
         return $this->responseFormat;
     }
-    
+
     /**
-     * 
+     *
      * @param string $format
      * @return Client
      */
     public function setRequestFormat($format)
     {
         $this->requestFormat = strtolower($format);
-        
+
         return $this;
     }
-    
+
     /**
-     * 
+     *
      * @return string
      */
     public function getRequestFormat()
@@ -278,7 +278,7 @@ EOH;
     public function refundOrderByFlubitId($id, $reason, $amount)
     {
         $payload = $this->generateRefundOrderPayload($reason, $amount);
-        
+
         $request = $this->getPostRequest(
             sprintf('orders/refund.%s', $this->responseFormat),
             $payload,
@@ -296,7 +296,7 @@ EOH;
     public function refundOrderByMerchantOrderId($id, $reason, $amount)
     {
         $payload = $this->generateRefundOrderPayload($reason, $amount);
-        
+
         $request = $this->getPostRequest(
             sprintf('orders/refund.%s', $this->responseFormat),
             $payload,
@@ -314,11 +314,11 @@ EOH;
     public function getOrders($status, \DateTime $from = null, $page = 1, $limit = 100)
     {
         $params = array();
-        
+
         if (!empty($from)) {
             $params['from'] = $from->format($this->timestampFormat);
         }
-        
+
         if (!empty($status)) {
             $params['status'] = $status;
         }
@@ -334,12 +334,24 @@ EOH;
         return $this->call($request);
     }
 
+    public function getProductsBySkus($skusData)
+    {
+        $url = sprintf('/1/products/filter.%s', $this->responseFormat);
+
+        $request = $this->getPostRequest(
+            $url,
+            $skusData
+        );
+
+        return $this->call($request);
+    }
+
     public function getProducts($isActive, $limit, $page, $sku = null)
     {
         $url = sprintf('/1/products/filter.%s', $this->responseFormat);
-        
+
         $params = array();
-        
+
         if (isset($isActive)) {
             $params['is_active'] = $isActive;
         }
@@ -353,7 +365,7 @@ EOH;
         } else {
             $params['limit'] = $limit;
             $params['page']  = $page;
-            
+
             $request = $this->getGetRequest(
                 $url,
                 $params
@@ -374,7 +386,7 @@ EOH;
 
         return $this->call($request);
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -403,7 +415,7 @@ EOH;
 
         return $this->call($request);
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -429,9 +441,9 @@ EOH;
 
         return $this->call($request);
     }
-    
+
     /**
-     * 
+     *
      * {@inheritdoc}
      */
     public function updateSingleProduct($productData)
@@ -452,33 +464,33 @@ EOH;
         $payLoad = null;
 
         if ('xml' == $this->requestFormat) {
-            
+
             $payLoad = sprintf(
-                        self::XML_DISPATCH_PAYLOAD, 
-                        $dateTime->format($this->timestampFormat), 
+                        self::XML_DISPATCH_PAYLOAD,
+                        $dateTime->format($this->timestampFormat),
                         $courier, $consignmentNumber, $trackingUrl
                         );
         } else {
             $payLoad = sprintf(
-                        self::JSON_DISPATCH_PAYLOAD, 
-                        $dateTime->format($this->timestampFormat), 
+                        self::JSON_DISPATCH_PAYLOAD,
+                        $dateTime->format($this->timestampFormat),
                         $courier, $consignmentNumber, $trackingUrl
                         );
         }
-        
+
         return $payLoad;
     }
 
     private function generateCancelOrderPayload($reason)
     {
-        return ('xml' == $this->requestFormat) ? 
+        return ('xml' == $this->requestFormat) ?
                 sprintf(self::XML_CANCEL_PAYLOAD, $reason) :
                 sprintf(self::JSON_CANCEL_PAYLOAD, $reason);
     }
-    
+
     private function generateRefundOrderPayload($reason, $amount)
     {
-        return ('xml' == $this->requestFormat) ? 
+        return ('xml' == $this->requestFormat) ?
                 sprintf(self::XML_REFUND_PAYLOAD, $reason, $amount) :
                 sprintf(self::JSON_REFUND_PAYLOAD, $reason, $amount);
     }
@@ -486,10 +498,10 @@ EOH;
     private function call(RequestInterface $request)
     {
         $responseFormat = trim($request->getHeader('accept'));
-        
+
         try {
             $response = $request->send(array($request));
-            
+
             return call_user_func_array(
                     array($response, self::$allowedContentTypes[$responseFormat]),
                     array()
@@ -502,7 +514,7 @@ EOH;
                     array($e->getResponse(), self::$allowedContentTypes[$responseFormat]),
                     array()
                     );
-            
+
             if ($statusCode === 401) {
 
                 throw new UnauthorizedException(is_object($xml) ? $xml->asXML() : json_encode($xml, JSON_PRETTY_PRINT), $statusCode);
@@ -526,7 +538,7 @@ EOH;
                 array('allow_redirects' => false)
             );
         $this->resetFormats();
-        
+
         return $request;
     }
 
@@ -545,10 +557,10 @@ EOH;
                 array('allow_redirects' => false)
             );
         $this->resetFormats();
-        
+
         return $request;
     }
-    
+
     private function getPatchRequest($uri, $payload = null, array $queryParams = array())
     {
         $formats = array_flip(self::$allowedContentTypes);
@@ -564,7 +576,7 @@ EOH;
                 array('allow_redirects' => false)
             );
         $this->resetFormats();
-        
+
         return $request;
     }
 
