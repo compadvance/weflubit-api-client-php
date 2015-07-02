@@ -43,7 +43,7 @@ That you could instantiate as
             'secret' => 'yiddjcoyyssksk04oc8sooc8wk2sk0ksgw40cw0gosgkwwocc',
             'baseUrl' => 'api.sandbox.weflubit.com',
         ];
-        $flubitClient = new ApiClient(Guzzle\Client, $config);
+        $flubitClient = new ApiClient(new GuzzleHttp\Client(), $config);
         
 ```
 
