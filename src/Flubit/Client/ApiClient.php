@@ -3,11 +3,13 @@
 namespace Flubit\Client;
 
 use Flubit\BadRequestException;
+use Flubit\NotFoundException;
 use Flubit\UnauthorizedException;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\ClientException;
 use \DateTime;
 use GuzzleHttp\Message\Request;
+use GuzzleHttp\Stream\Stream;
 
 class ApiClient
 {
@@ -54,17 +56,84 @@ class ApiClient
 
     /**
      * @param string $endpoint
+     * @param array $params
+     * @return string
      */
-    private function get($endpoint)
+    public function get($endpoint, array $params = [])
     {
         $token = $this->generateAuthToken();
-        $request = $this->client->createRequest('GET',$this->buildUrl($endpoint),
+        $request = $this->client->createRequest('GET', $this->buildUrl($endpoint, $params),
             ['headers' => ['auth-token' => $token]]
         );
 
         return $this->call($request);
     }
 
+
+
+    /**
+     * @param string $endpoint
+     * @param string $body
+     * @param array $params
+     * @return boolean
+     */
+    public function post($endpoint, $body, array $params = [])
+    {
+        $token = $this->generateAuthToken();
+        var_dump($this->buildUrl($endpoint, $params));
+        var_dump($body);
+        $request = $this->client->createRequest('POST', $this->buildUrl($endpoint, $params),
+                                    ['headers' => ['auth-token' => $token]
+                                    ]);
+        $bodyStream = Stream::factory($body);
+        $request->setBody($bodyStream);
+        return $this->call($request);
+    }
+
+     /**
+     * @param string $endpoint
+     * @param string $body
+      * @return boolean
+     */
+    public function patch($endpoint, $body)
+    {
+        $token = $this->generateAuthToken();
+        $request = $this->client->createRequest('PATCH', $this->buildUrl($endpoint),
+                                    ['headers' => ['auth-token' => $token]
+                                    ]);
+
+        $bodyStream = Stream::factory($body);
+        $request->setBody($bodyStream);
+        $response = $this->call($request);
+        if ($response->getStatusCode() == 204) {
+            return true;
+        }
+        return false;
+    }
+
+    private function call(Request $request)
+    {
+        try {
+            return $this->client->send($request);
+        } catch (ClientException $e) {
+            if ($e->getResponse()->getStatusCode() == 401) {
+                throw new UnauthorizedException('You have to be authenticated to access this resource');
+            }
+            if ($e->getResponse()->getStatusCode() == 400) {
+                throw new BadRequestException($e->getResponse()->getBody()->getContents());
+            }
+            if ($e->getResponse()->getStatusCode() == 404) {
+                throw new NotFoundException($e->getMessage());
+            }
+
+            throw new \Exception($e->getMessage());
+        }
+    }
+
+    private function buildUrl($endpoint, array $params = [])
+    {
+        return sprintf('%s%s.%s?%s', $this->baseUrl, $endpoint, $this->format, http_build_query($params));
+    }
 
     private function generateAuthToken()
     {
@@ -87,54 +156,5 @@ class ApiClient
             $nonce,
             $time
         );
-    }
-
-    public function getAccountStatus()
-    {
-        return $this->get('account/status')->getBody()->getContents();
-    }
-
-    /**
-     * @param sting $product
-     */
-    public function addProduct($product)
-    {
-        return $this->post('products', $product);
-    }
-
-    private function post($endpoint, $body)
-    {
-            $token = $this->generateAuthToken();
-            $request = $this->client->createRequest('POST',$this->buildUrl($endpoint),
-                                    ['headers' => ['auth-token' => $token],
-                                      'body'  => $body
-                                    ]);
-
-            $response = $this->call($request);
-            if ($response->getStatusCode() == 201) {
-                return true;
-            }
-            return false;
-    }
-
-    private function call(Request $request)
-    {
-        try {
-            return $this->client->send($request);
-
-        } catch (ClientException $e) {
-            if ($e->getResponse()->getStatusCode() == 401) {
-                throw new UnauthorizedException('You have to be authenticated to access this resource');
-            }
-            if ($e->getResponse()->getStatusCode() == 400) {
-                throw new BadRequestException($e->getResponse()->getBody()->getContents());
-            }
-            throw new \Exception($e->getMessage());
-        }
-    }
-
-    private function buildUrl($endpoint)
-    {
-        return $this->baseUrl . $endpoint.'.'.$this->format;
     }
 }
