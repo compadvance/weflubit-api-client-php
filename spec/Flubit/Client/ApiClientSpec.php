@@ -52,8 +52,8 @@ class ApiClientSpec extends ObjectBehavior
 
     public function it_should_throw_Unauthorized_exception_when_the_respose_is_a_401()
     {
-        $client = new client();
-        $mock = new mock([new response(401)]);
+        $client = new Client();
+        $mock = new Mock([new Response(401)]);
         $client->getemitter()->attach($mock);
 
         $this->beConstructedWith($client, $this->getDefaultConfigArray());
@@ -62,25 +62,22 @@ class ApiClientSpec extends ObjectBehavior
 
     public function it_should_throw_a_bad_request_exception_when_the_response_is_a_400()
     {
-        $productjson = '{
-                        "sku": "sku1"
-                        }';
+        $productJson = '{ "sku": "sku1" }';
 
         $stream = Stream::factory('{"code":400,"message":"You must specify at least one valid identifier."}');
-        $mock = new mock([new response(400, [], $stream)]);
+        $mock = new Mock([new response(400, [], $stream)]);
 
         $client = new client();
         $client->getemitter()->attach($mock);
 
         $this->beConstructedWith($client, $this->getDefaultConfigArray());
-        $this->shouldThrow('Flubit\BadRequestException')->during('post', ['product',$productjson]);
+        $this->shouldThrow('Flubit\BadRequestException')->during('post', ['product',$productJson]);
     }
-
 
     public function it_should_throw_a_Not_found_exception_when_the_response_is_a_404()
     {
-        $client = new client();
-        $mock = new mock([new response(404)]);
+        $client = new Client();
+        $mock = new Mock([new Response(404)]);
         $client->getemitter()->attach($mock);
 
         $this->beConstructedWith($client, $this->getDefaultConfigArray());
