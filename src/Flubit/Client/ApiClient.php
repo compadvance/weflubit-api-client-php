@@ -80,8 +80,6 @@ class ApiClient
     public function post($endpoint, $body, array $params = [])
     {
         $token = $this->generateAuthToken();
-        var_dump($this->buildUrl($endpoint, $params));
-        var_dump($body);
         $request = $this->client->createRequest('POST', $this->buildUrl($endpoint, $params),
                                     ['headers' => ['auth-token' => $token]
                                     ]);
