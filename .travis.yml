@@ -9,4 +9,5 @@ before_script:
 
 script:
   - vendor/bin/phpspec  run
-  - vendor/bin/php-cs-fixer fix --dry-run --verbose --diff
+  - vendor/bin/php-cs-fixer fix --dry-run --verbose --diff src
+  - vendor/bin/php-cs-fixer fix --dry-run --verbose --diff spec
