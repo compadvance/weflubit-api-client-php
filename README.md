@@ -1,4 +1,4 @@
-Merchant API Client
+Weflubit API Client
 ===================
 
 This library can be used to call the WeFlubit API. See the [API documentation] (http://dev.weflubit.com).
