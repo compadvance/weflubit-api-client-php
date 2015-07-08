@@ -1,309 +1,99 @@
 <?php
-/**
- * @file
- */
 
-require_once 'vendor/autoload.php';
-require_once 'config.php';
-
-$client = new \Flubit\Client\Client(CONSUMER_KEY, CONSUMER_SECRET, DOMAIN);
-
-##############################
-# Call account/status
-##############################
-
-try {
-
-    $xml = $client->getAccountStatus();
-    printf("You have %s active products\n", (int) $xml->active_products);
-
-} catch (\Flubit\Exception\UnauthorizedException $e) {
-
-    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
-}
-
-// The following exit ensures that no test data is submitted to the API.
-exit();
-
-##############################
-# Post a feed
-##############################
-
-$productXml = <<<EOH
-<?xml version="1.0" encoding="UTF-8"?>
-<products>
-    <product sku="123456SKU">
-        <title>iPhone 5 Hybrid Rubberised Back Cover Case</title>
-        <identifiers>
-            <identifier type="ASIN">B008OSEQ64</identifier>
-        </identifiers>
-    </product>
-</products>
-EOH;
-
-try {
-
-    $xml = $client->createProducts($productXml);
-    $feedId = (string) $xml;
-    printf("Feed %s created\n", $feedId);
-
-} catch (\Flubit\Exception\UnauthorizedException $e) {
-
-    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
-}
-
-##############################
-# Post a feed - CSV
-##############################
-
-$productXml = <<<EOH
-sku,stock
-"174",999
-EOH;
-
-try {
-
-    $xml = $client->setRequestFormat('csv')
-            ->createProducts($productXml);
-    $feedId = (string) $xml;
-    printf("Feed %s created\n", $feedId);
-
-} catch (\Flubit\Exception\UnauthorizedException $e) {
-
-    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
-}
-
-##############################
-# Call product search
-##############################
-try {
-    $isActive = true;
-    $page     = 1;
-    $limit    = 10;
-
-    $xml = $client->getProducts($isActive, $limit, $page);
-    echo $xml->asXML();
-
-} catch (\Flubit\Exception\UnauthorizedException $e) {
-    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
-}
-
-##############################
-# Call product search - JSON
-##############################
-try {
-    $isActive = true;
-    $page     = 1;
-    $limit    = 10;
-
-    $xml = $client->setResponseFormat('json')
-            ->getProducts($isActive, $limit, $page);
-
-    echo json_encode($xml);
-
-} catch (\Flubit\Exception\UnauthorizedException $e) {
-    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
-}
-
-##############################
-# Call product search by SKUs
-##############################
-try {
-
-$skus = <<<EOH
-<?xml version="1.0" encoding="UTF-8"?>
-<skus>
-    <sku>SKU1</sku>
-    <sku>SKU2</sku>
-    <sku>SKU3</sku>
-</skus>
-EOH;
-
-    $xml = $client->getProductsBySkus($skus);
-    echo $xml->asXML();
-
-} catch (\Flubit\Exception\UnauthorizedException $e) {
-    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
-}
-
-##############################
-# Call product search by SKUs - JSON
-##############################
-try {
-
-$skus = <<<EOH
-{
-    "skus": [
-        "SKU1",
-        "SKU2",
-        "SKU3"
-    ]
-}
-EOH;
-
-    $xml = $client->setRequestFormat('json')
-            ->setResponseFormat('json')
-            ->getProductsBySkus($skus);
-
-    echo json_encode($xml);
-
-} catch (\Flubit\Exception\UnauthorizedException $e) {
-    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
-}
-
-########################################
-# Check feed status
-########################################
-
-try {
-
-    $xml = $client->getProductsFeed($feedId);
-    printf("Feed %s has status: %s\n", $feedId, (string) $xml->attributes()->status);
-
-} catch (\Flubit\Exception\BadMethodCallException $e) {
-    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
-}
-
-########################################
-# Check feed status - JSON
-########################################
-
-try {
-
-    $xml = $client->setResponseFormat('json')
-            ->getProductsFeed($feedId);
-    printf("Feed %s has status: %s\n", $feedId, $xml['status']);
-
-} catch (\Flubit\Exception\BadMethodCallException $e) {
-    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
-}
-
-########################################
-# Check feed errors
-########################################
-
-try {
-
-    $page = 0;
-    $limit = 1;
-    $xml = $client->getProductsFeedErrors($feedId,$page,$limit);
-
-    echo $xml->asXML();
-
-} catch (\Flubit\Exception\BadMethodCallException $e) {
-    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
-}
-
-########################################
-# Check feed errors - JSON
-########################################
-
-try {
-
-    $page = 0;
-    $limit = 1;
-    $xml = $client->setResponseFormat('json')
-            ->getProductsFeedErrors($feedId,$page,$limit);
-
-    echo json_encode($xml);
-
-} catch (\Flubit\Exception\BadMethodCallException $e) {
-    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
-}
-
-########################################
-# Get orders awaiting dispatch
-########################################
-
-try {
-
-    $xml = $client->getOrders('awaiting_dispatch', new \DateTime("-1 year"));
-
-} catch (\Flubit\Exception\BadMethodCallException $e) {
-
-    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
-}
-
-########################################
-# Dispatch an order
-########################################
-
-try {
-
-    $xml = $client->dispatchOrderByFlubitId(
-        1,
-        new DateTime(),
-        array(
-            'courier'            => 'Lorem Ipsum',
-            'consignment_number' => '123456789',
-            'tracking_url'       => 'http://someurl.com/tracking'
-        )
-    );
-
-} catch (\Flubit\Exception\BadMethodCallException $e) {
-    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
-}
-
-########################################
-# Dispatch an order - JSON
-########################################
-
-try {
-
-    $xml = $client->setRequestFormat('json')
-            ->dispatchOrderByFlubitId(
-                1193,
-                new DateTime(),
-                array(
-                    'courier'            => 'JB',
-                    'consignment_number' => '123456789',
-                    'tracking_url'       => 'http://someurl.com/tracking'
-                )
-            );
-
-} catch (\Flubit\Exception\BadMethodCallException $e) {
-    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
-}
-
-########################################
-# Cancel an order
-########################################
-
-try {
-
-    $xml = $client->cancelOrderByMerchantOrderId(
-                1,
-                "Wrong colour."
-            );
-
-} catch (\Flubit\Exception\BadMethodCallException $e) {
-    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
-}
-
-########################################
-# Cancel an order - JSON
-########################################
-
-try {
-
-    $xml = $client->setRequestFormat('json')
-            ->cancelOrderByMerchantOrderId(
-                1,
-                "Wrong colour."
-            );
-
-} catch (\Flubit\Exception\BadMethodCallException $e) {
-    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
-}
-
-########################################
-# Refund an order
-########################################
-
-try {
-
-    $xml = $client->refundOrderByMerchantOrderId(1);
-
-} catch (\Flubit\Exception\BadMethodCallException $e) {
-    printf("API Error (%d): %s\n", $e->getCode(), $e->getMessage());
-}
+require 'vendor/autoload.php';
+
+            $config  = [
+            'key' => '2827-1946-2647',
+            'secret' => 'yiddjcoyyssksk04oc8sooc8wk2sk0ksgw40cw0gosgkwwocc',
+            'baseUrl' => 'api.sandbox.weflubit.com',
+        ];
+
+$flubitClient =  \Flubit\Client\FlubitApiFactory::factory($config);
+
+$status = $flubitClient->getAccountStatus();
+
+var_dump($status);
+
+
+        $productJson = '{
+  "sku": "SKU2",
+  "title": "Pencil case 1",
+  "is_active": true,
+  "base_price": 4.99,
+  "stock": 2,
+  "description": "Used for drawing",
+  "images": [
+    {
+      "url": "http://www.flubit.com/1.jpg"
+    },
+    {
+      "url": "http://www.flubit.com/2.jpg"
+    }
+  ],
+  "identifiers": [
+    {
+      "type": "EAN",
+      "value": "5010559094936"
+    }
+  ],
+  "brand": "Pelican",
+  "delivery_cost": {
+    "standard": 1.50,
+    "express": 2.99
+  },
+  "weight": "300",
+  "available_from": "2005-08-15T15:52:01+0000",
+  "packaging_code": "PK01",
+  "additional_key_1": "additional_value_1",
+  "additional_key_2": "additional_value_2"
+}';
+
+
+//$response = $flubitClient->addProduct($productJson);
+
+//var_dump($response);
+
+$response = $flubitClient->getProductsFiltered(['sku' => 'SKU2']);
+
+var_dump($response);
+
+
+       $product_feed = 'sku,title,is_active,base_price,stock,description,image1,mpn,brand,category,standard_delivery_cost,tax_rate,extended[colour],extended[size],extended[country_of_origin]
+"60138","SanDisk 4GB Clip Zip","1","22.62","4","","http://placeholder.it/image/60138.jpg","111383+100350","SanDisk","Flash Memory","0","20","blue","1.90","Jamaica"' ;
+
+$response = $flubitClient->addProductFeed($product_feed);
+var_dump($response);
+
+$feedId = $flubitClient->updateProductFeed($product_feed);
+
+$response = $flubitClient->getProductFeedStatus($feedId);
+var_dump($response);
+
+
+$response = $flubitClient->getProductFeedErrors($feedId);
+var_dump($response);
+/*
+$response = $flubitClient->cancelOrder(34,'Out of Stock');
+var_dump($response);
+
+$body = '{
+          "dispatched_at": "2013-06-16T14:12:24+01:00",
+          "courier": "Royal Mail",
+          "consignment_number": "AB123456789GB",
+          "tracking_url": "https://www.royalmail.com/track-your-item"
+        }';
+
+$response = $flubitClient->markOrderAsDispatched(34, $body);
+var_dump($response);
+*/
+
+$skus = '{
+  "skus": [
+    "SKU1",
+    "SKU2",
+    "SKU3"
+  ]
+}';
+
+$response = $flubitClient->postProductsFiltered($skus);
+var_dump($response);

@@ -1,8 +1,7 @@
 <?php
 
-namespace Flubit\Exception;
+namespace Flubit;
 
 class UnauthorizedException extends \RuntimeException
 {
-
 }

@@ -15,29 +15,39 @@ cd merchant-api-client-php
 curl -sS https://getcomposer.org/installer | php
 ./composer.phar install
 ```
+### Library Use
 
-### Configure your API credentials
-
-First copy the distribution config file to the correct location:
-
-```
-cp config.php.dist config.php
-```
-
-Then edit the file to include your WeFlubit API credentials:
+You can use the library by simply setting an array with you credentials and calling the factory:
 
 ```
-define('CONSUMER_KEY', '2827-1946-2647');
-define('CONSUMER_SECRET', 'yiddjcoyyssksk04oc8sooc8wk2sk0ksgw40cw0gosgkwwocc');
-define('DOMAIN', 'api.sandbox.weflubit.com');
+
+        $config  = [
+            'key' => '2827-1946-2647',
+            'secret' => 'yiddjcoyyssksk04oc8sooc8wk2sk0ksgw40cw0gosgkwwocc',
+            'baseUrl' => 'api.sandbox.weflubit.com',
+        ];
+        $flubitClient =  \Flubit\Client\FlubitApiFactory::factory($config);
 
 ```
-(You can copy your API credentials from the [integration tab](https://weflubit.com/merchant#/settings/integration) of your WeFlubit account settings page.)
 
-### Run the test script
+this will provide you of a wrapper of the available methods at the moment on the API
 
-You can run the PHP test script to call the GET account/status API endpoint. A successful respnse means that everything is configured correctly (Note: The script terminates at [line 25] (https://github.com/Flubit/merchant-api-client-php/blob/master/test.php#L25) to prevent test data being sent to the API). 
 
+The library has a second component ApiClient that has only some exception handle and manages the validations for each request 
+
+That you could instantiate as  
 ```
-php test.php
+
+        $config  = [
+            'key' => '2827-1946-2647',
+            'secret' => 'yiddjcoyyssksk04oc8sooc8wk2sk0ksgw40cw0gosgkwwocc',
+            'baseUrl' => 'api.sandbox.weflubit.com',
+        ];
+        $flubitClient = new ApiClient(new GuzzleHttp\Client(), $config);
+        
 ```
+
+And you can call to the endpoints directly and will return an Guzzle\Message\Response object
+
+
+On the test.php file you can find some really easy examples of use of the library
