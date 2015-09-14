@@ -6,9 +6,9 @@ use Flubit\Client\ApiClient;
 
 class FlubitApi
 {
-    private $apiClient;
+    protected $apiClient;
 
-    private $format;
+    protected $format;
 
     public function __construct(ApiClient $apiClient, $format = 'json')
     {
