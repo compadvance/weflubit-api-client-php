@@ -1,5 +1,5 @@
 {
-    "name": "flubit/merchant-api-client",
+    "name": "compadvance/weflubit-api-client-php",
     "type": "library",
     "description": "PHP client library for the Flubit merchant API.",
     "keywords": ["flubit"],
