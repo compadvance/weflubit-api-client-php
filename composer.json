@@ -7,7 +7,7 @@
     "license": "MIT",
     "require": {
         "php": ">=5.4",
-        "guzzlehttp/guzzle": "~5.3"
+        "guzzlehttp/guzzle": "@dev"
     },
     "require-dev": {
         "phpspec/phpspec": "2.2.*@dev",
