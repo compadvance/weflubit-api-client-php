@@ -6,9 +6,9 @@ use Flubit\BadRequestException;
 use Flubit\NotFoundException;
 use Flubit\UnauthorizedException;
 use GuzzleHttp\Client as HttpClient;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Exception\ClientException;
 use \DateTime;
-use GuzzleHttp\Message\Request;
 use GuzzleHttp\Stream\Stream;
 
 class ApiClient
@@ -53,6 +53,17 @@ class ApiClient
 
         $this->baseUrl = $baseUrl.$this->version.'/';
     }
+    
+    private function createRequest($method, $url, $params)
+    {
+        $request = new Request($method, $url);        
+        if (isset($params["headers"])) {
+            foreach ($params["headers"] as $header => $value) {
+                $request = $request->withHeader($header, $value);
+            }
+        }            
+        return $request;        
+    }
 
     /**
      * @param string $endpoint
@@ -62,7 +73,7 @@ class ApiClient
     public function get($endpoint, array $params = [])
     {
         $token = $this->generateAuthToken();
-        $request = $this->client->createRequest('GET', $this->buildUrl($endpoint, $params),
+        $request = $this->createRequest('GET', $this->buildUrl($endpoint, $params),
             ['headers' => ['auth-token' => $token]]
         );
 
@@ -80,7 +91,7 @@ class ApiClient
     public function post($endpoint, $body, array $params = [])
     {
         $token = $this->generateAuthToken();
-        $request = $this->client->createRequest('POST', $this->buildUrl($endpoint, $params),
+        $request = $this->createRequest('POST', $this->buildUrl($endpoint, $params),
                                     ['headers' => ['auth-token' => $token]
                                     ]);
         $bodyStream = Stream::factory($body);
@@ -96,7 +107,7 @@ class ApiClient
     public function patch($endpoint, $body)
     {
         $token = $this->generateAuthToken();
-        $request = $this->client->createRequest('PATCH', $this->buildUrl($endpoint),
+        $request = $this->createRequest('PATCH', $this->buildUrl($endpoint),
                                     ['headers' => ['auth-token' => $token]
                                     ]);
 
